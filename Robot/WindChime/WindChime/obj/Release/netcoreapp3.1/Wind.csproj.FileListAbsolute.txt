@@ -1,0 +1,12 @@
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\Wind.exe
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\Wind.deps.json
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\Wind.runtimeconfig.json
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\Wind.runtimeconfig.dev.json
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\Wind.dll
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\Wind.pdb
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\Wind.AssemblyInfoInputs.cache
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\Wind.AssemblyInfo.cs
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\Wind.csproj.CoreCompileInputs.cache
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\Wind.dll
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\Wind.pdb
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\Wind.genruntimeconfig.cache

@@ -1,0 +1,52 @@
+{
+    uin: 1480576455
+    password: "xuanr,2001"
+    encrypt_password: false
+    password_encrypted: ""
+    enable_db: false
+    access_token: ""
+    relogin: {
+        enabled: true
+        relogin_delay: 3
+        max_relogin_times: 0
+    }
+    _rate_limit: {
+        enabled: false
+        frequency: 1
+        bucket_size: 1
+    }
+    ignore_invalid_cqcode: false
+    force_fragmented: true
+    fix_url: false
+    proxy_rewrite: ""
+    heartbeat_interval: -1
+    http_config: {
+        enabled: true
+        host: 0.0.0.0
+        port: 5700
+        timeout: 0
+        post_urls: 
+        {
+            "127.0.0.1:5710":http
+        }
+    }
+    ws_config: {
+        enabled: false
+        host: 0.0.0.0
+        port: 6700
+    }
+    ws_reverse_servers: [
+        {
+            enabled: false
+            reverse_url: ws://you_websocket_universal.server
+            reverse_api_url: ws://you_websocket_api.server
+            reverse_event_url: ws://you_websocket_event.server
+            reverse_reconnect_interval: 3000
+        }
+    ]
+    post_message_format: array
+    use_sso_address: false
+    debug: false
+    log_level: info
+    web_ui: null
+}

@@ -1,0 +1,13 @@
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\linux-x64\ConsoleApp1
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\linux-x64\ConsoleApp1.deps.json
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\linux-x64\ConsoleApp1.runtimeconfig.json
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\linux-x64\ConsoleApp1.runtimeconfig.dev.json
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\linux-x64\ConsoleApp1.dll
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\netcoreapp3.1\linux-x64\ConsoleApp1.pdb
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\ConsoleApp1.AssemblyInfoInputs.cache
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\ConsoleApp1.AssemblyInfo.cs
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\ConsoleApp1.csproj.CoreCompileInputs.cache
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\ConsoleApp1.dll
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\ConsoleApp1.pdb
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\ConsoleApp1.genruntimeconfig.cache
+C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\ConsoleApp1.csprojAssemblyReference.cache

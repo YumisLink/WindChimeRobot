@@ -8,6 +8,10 @@ class Api {
     {
         return "[CQ:at,qq=" + user_id + "]";
     }
+    public static string GetImageMessage(string user_id)
+    {
+        return "[CQ:image,file=" + user_id + ".image]";
+    }
     public Api() { }
     public static void Private(string user_id,string message)
     {

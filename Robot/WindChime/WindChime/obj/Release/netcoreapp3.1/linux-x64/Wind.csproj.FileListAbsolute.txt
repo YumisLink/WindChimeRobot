@@ -10,3 +10,15 @@ C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\li
 C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\Wind.dll
 C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\Wind.pdb
 C:\Users\63569\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\netcoreapp3.1\linux-x64\Wind.genruntimeconfig.cache
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\linux-x64\Wind
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\linux-x64\Wind.deps.json
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\linux-x64\Wind.runtimeconfig.json
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\linux-x64\Wind.runtimeconfig.dev.json
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\linux-x64\Wind.dll
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\linux-x64\Wind.pdb
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\linux-x64\Wind.AssemblyInfoInputs.cache
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\linux-x64\Wind.AssemblyInfo.cs
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\linux-x64\Wind.csproj.CoreCompileInputs.cache
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\linux-x64\Wind.dll
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\linux-x64\Wind.pdb
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\linux-x64\Wind.genruntimeconfig.cache

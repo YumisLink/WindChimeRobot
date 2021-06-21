@@ -4,12 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
-public struct staff : IComparable<staff>
+public struct Staff : IComparable<Staff>
 {
     public string name;
     public int star;
 
-    public int CompareTo([AllowNull] staff other)
+    public int CompareTo([AllowNull] Staff other)
     {
         return Comparer<int>.Default.Compare(star,other.star);
     }
@@ -35,7 +35,7 @@ public struct Pt : IComparable<Pt>
 }
 public class Recuit
 {
-    Dictionary<string ,List<staff> > Rec = new Dictionary<string, List<staff> >();
+    Dictionary<string ,List<Staff> > Rec = new Dictionary<string, List<Staff> >();
     List<string> type = new List<string>();
     public Recuit()
     {
@@ -54,11 +54,11 @@ public class Recuit
                 string[] sf = ss.Split(" ");
                 int l = Convert.ToInt32(sf[1]);
                 string typ = sf[0];
-                var list = new List<staff>();
+                var list = new List<Staff>();
                 for (int j = 1; j <= l; j++)
                 {
                     string[] s1 = sr.ReadLine().Split();
-                    staff stf;
+                    Staff stf;
                     stf.star = Convert.ToInt32(s1[0]);
                     stf.name = s1[1];
                     list.Add(stf);
@@ -68,7 +68,7 @@ public class Recuit
             }
         }
     }
-    public List<staff> GetByName(string ss)
+    public List<Staff> GetByName(string ss)
     {
         if (Rec.TryGetValue(ss,out var l))
             return l;
@@ -76,7 +76,7 @@ public class Recuit
     } 
     public string GetString(string ss,bool AddSix)
     {
-        List<staff> list;
+        List<Staff> list;
         list = GetByName(ss);
         if (list == null)
         {
@@ -93,7 +93,7 @@ public class Recuit
         }
         return ret;
     }
-    public string GetStringByList(List<staff> list, bool AddSix)
+    public string GetStringByList(List<Staff> list, bool AddSix)
     {
         list.Sort();
         string ret = "£º";
@@ -123,7 +123,7 @@ public class Recuit
             return false;
         if (StringSplit.Length >= 5)
         {
-            List<staff>[] list = new List<staff>[10];
+            List<Staff>[] list = new List<Staff>[10];
             for (int i = 1; i < StringSplit.Length; i++)
             {
                 list[i - 1] = GetByName(StringSplit[i]);
@@ -159,7 +159,7 @@ public class Recuit
                 {
                     if (StringSplit[i] == StringSplit[j])
                         continue;
-                    List<staff> lista = new List<staff>();
+                    List<Staff> lista = new List<Staff>();
                     lista = list[i-1].Intersect(list[j-1]).ToList();
                     string arg1 = GetStringByList(lista, SixOnly);
                     if (arg1 != null)
@@ -182,7 +182,7 @@ public class Recuit
                     {
                         if (StringSplit[i] == StringSplit[j] ||StringSplit[i] == StringSplit[k] || StringSplit[k] == StringSplit[j])
                             continue;
-                        List<staff> lista = new List<staff>();
+                        List<Staff> lista = new List<Staff>();
                         lista = list[i-1].Intersect(list[j-1].Intersect(list[k-1])).ToList();
                         string arg1 = GetStringByList(lista, SixOnly);
                         if (arg1 != null)
@@ -211,7 +211,7 @@ public class Recuit
         }
         else
         {
-            List<staff>[] list = new List<staff>[5];
+            List<Staff>[] list = new List<Staff>[5];
             for (int i = 1; i < StringSplit.Length; i++)
             {
                 list[i - 1] = GetByName(StringSplit[i]);
@@ -225,7 +225,7 @@ public class Recuit
                     SixOnly = true;
                 }
             }
-            List<staff> lista = new List<staff>();
+            List<Staff> lista = new List<Staff>();
             string str = "";
             for (int i = 1; i < StringSplit.Length; i++)
             {

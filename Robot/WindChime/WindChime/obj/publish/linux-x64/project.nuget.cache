@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6bMKXY66udR456Tk2jZqb6FfUOmhF1bEDi2Hg2YNdISC6mn1fGOvgKGjp7VWyhKq2p66wGFQ0c8JfllSy/hscA==",
+  "dgSpecHash": "6/EbRUCa+YNGBgHPzORneMcku+P4Z0XDZVAXKbH9pRLLnj5+55Ao+KXOW6NpnOAxdyShoHwPxjR7uyWR4hkmNA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\63569\\source\\repos\\ConsoleApp1\\ConsoleApp1\\Wind.csproj",
+  "projectFilePath": "D:\\WindChimeRobot\\Robot\\WindChime\\WindChime\\Wind.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\63569\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\3.1.5\\microsoft.netcore.app.host.linux-x64.3.1.5.nupkg.sha512"
   ],

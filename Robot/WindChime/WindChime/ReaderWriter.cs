@@ -28,6 +28,10 @@ public struct UserInfo
     /// 增加词汇的次数
     /// </summary>
     public int AddTimes;
+    /// <summary>
+    /// 拥抱的时间
+    /// </summary>
+    public int HugTime;
 };
 
 public class ReaderWriter
@@ -45,6 +49,7 @@ public class ReaderWriter
         ret.HeartTime = 0;
         ret.AddTimes = 0;
         ret.CanGet = false;
+        ret.HugTime = 0;
         try
         {
             using (StreamReader sr = new StreamReader(user_id + ".dat"))
@@ -63,7 +68,7 @@ public class ReaderWriter
                     if (cnt == 4)
                         ret.WorkTime = Convert.ToInt32(line);
                     if (cnt == 5)
-                        ret.WorkTime = Convert.ToInt32(line);
+                        ret.HugTime = Convert.ToInt32(line);
                     cnt++;
                 }
             }
@@ -82,6 +87,7 @@ public class ReaderWriter
             sw.WriteLine(user.heart);
             sw.WriteLine(user.money);
             sw.WriteLine(user.WorkTime);
+            sw.WriteLine(user.HugTime);
         }
     }
     public ReaderWriter()
@@ -126,6 +132,34 @@ public class ReaderWriter
             Api.Private("635691684", "主人！ReaderWrite类初始化出现问题，系统已经关闭，请你重启！");
             using (StreamReader sr = new StreamReader("message.dat")) ;
         }
+    }
+
+
+    public static bool Main(string group_id, string user_id, string name,string message)
+    {
+        Change(group_id, user_id, message);
+
+        if (message == "查询")
+        {
+            Find(group_id, user_id, name);
+            return true;
+        }
+        else if (message == "摸摸风铃")
+        {
+            Touch(group_id, user_id, name);
+            return true;
+        }
+        else if (message == "打工")
+        {
+            Work(group_id, user_id, name);
+            return true;
+        }
+        else if (message == "风铃眼熟我")
+        {
+            Remember(group_id, user_id, name);
+            return true;
+        }
+        else return false;
     }
     public static void Touch(string group_id, string user_id, string name)
     {
@@ -501,7 +535,7 @@ public class ReaderWriter
                 Api.Group(group_id, "似乎您的金币有点不够呢~" + name + "\n当前金币：" + user.money + "\n需求金币：1000");
             }
         }
-        if (str[0].Contains("Static"))
+        else if (str[0].Contains("Static"))
         {
             if (user.money >= 100)
             {
@@ -510,11 +544,11 @@ public class ReaderWriter
                     Tip.Add(str[1].Substring(2), str[2].Substring(2));
                     user.money -= 100;
                     Api.Group(group_id, "添加成功！那么这个100金币，我就收下了哦~\n当前金币" + user.money); 
-                    using (StreamWriter sr1 = new StreamWriter("MessageStatic.dat"))
+                    using (StreamWriter sr2 = new StreamWriter("MessageStatic.dat"))
                     {
-                        foreach (var i in Rec)
+                        foreach (var i in Tip)
                         {
-                            sr1.WriteLine(i.Key + " " + i.Value);
+                            sr2.WriteLine(i.Key + " " + i.Value);
                         }
                     }
                     WriteToFile(user);

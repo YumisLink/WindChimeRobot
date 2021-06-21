@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\63569\\source\\repos\\ConsoleApp1\\ConsoleApp1\\Wind.csproj",
+      "projectUniqueName": "D:\\WindChimeRobot\\Robot\\WindChime\\WindChime\\Wind.csproj",
       "projectName": "Wind",
-      "projectPath": "C:\\Users\\63569\\source\\repos\\ConsoleApp1\\ConsoleApp1\\Wind.csproj",
+      "projectPath": "D:\\WindChimeRobot\\Robot\\WindChime\\WindChime\\Wind.csproj",
       "packagesPath": "C:\\Users\\63569\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\63569\\source\\repos\\ConsoleApp1\\ConsoleApp1\\obj\\publish\\linux-x64\\",
+      "outputPath": "D:\\WindChimeRobot\\Robot\\WindChime\\WindChime\\obj\\publish\\linux-x64\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\63569\\AppData\\Roaming\\NuGet\\NuGet.Config",

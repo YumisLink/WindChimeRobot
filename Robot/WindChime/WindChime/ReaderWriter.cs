@@ -29,9 +29,26 @@ public struct UserInfo
     /// </summary>
     public int AddTimes;
     /// <summary>
-    /// 拥抱的时间
+    /// 是否初始化过
     /// </summary>
-    public int HugTime;
+    public int Inited;
+
+    /// <summary>
+    /// 勇气
+    /// </summary>
+    public int Courage;
+    /// <summary>
+    /// 谨慎
+    /// </summary>
+    public int Cautious;
+    /// <summary>
+    /// 自律
+    /// </summary>
+    public int Discipline;
+    /// <summary>
+    /// 正义
+    /// </summary>
+    public int Justice;
 };
 
 public class ReaderWriter
@@ -39,6 +56,7 @@ public class ReaderWriter
     Dictionary<string, string> Rec = new Dictionary<string, string>();
     Dictionary<string, string> Tip = new Dictionary<string, string>();
     Dictionary<string, bool> IgnoreList = new Dictionary<string, bool>();
+    public static Random random = new Random();
     public static UserInfo GetUserInfo(string user_id)
     {
         UserInfo ret;
@@ -49,7 +67,11 @@ public class ReaderWriter
         ret.HeartTime = 0;
         ret.AddTimes = 0;
         ret.CanGet = false;
-        ret.HugTime = 0;
+        ret.Inited = 0;
+        ret.Courage = 0;
+        ret.Cautious = 0;
+        ret.Discipline = 0;
+        ret.Justice = 0;
         try
         {
             using (StreamReader sr = new StreamReader(user_id + ".dat"))
@@ -68,7 +90,15 @@ public class ReaderWriter
                     if (cnt == 4)
                         ret.WorkTime = Convert.ToInt32(line);
                     if (cnt == 5)
-                        ret.HugTime = Convert.ToInt32(line);
+                        ret.Inited = Convert.ToInt32(line);
+                    if (cnt == 6)
+                        ret.Courage = Convert.ToInt32(line);
+                    if (cnt == 7)
+                        ret.Cautious = Convert.ToInt32(line);
+                    if (cnt == 8)
+                        ret.Discipline = Convert.ToInt32(line);
+                    if (cnt == 9)
+                        ret.Justice = Convert.ToInt32(line);
                     cnt++;
                 }
             }
@@ -87,7 +117,11 @@ public class ReaderWriter
             sw.WriteLine(user.heart);
             sw.WriteLine(user.money);
             sw.WriteLine(user.WorkTime);
-            sw.WriteLine(user.HugTime);
+            sw.WriteLine(user.Inited);
+            sw.WriteLine(user.Courage);
+            sw.WriteLine(user.Cautious);
+            sw.WriteLine(user.Discipline);
+            sw.WriteLine(user.Justice);
         }
     }
     public ReaderWriter()
@@ -113,7 +147,7 @@ public class ReaderWriter
                 {
                     string[] ss = str.Split(" ");
                     string rs = ss[1];
-                    for (int i = 2; i < ss.Length;i++)
+                    for (int i = 2; i < ss.Length; i++)
                         rs += ss[i];
                     Tip.Add(ss[0], rs);
                 }
@@ -135,7 +169,7 @@ public class ReaderWriter
     }
 
 
-    public static bool Main(string group_id, string user_id, string name,string message)
+    public static bool Main(string group_id, string user_id, string name, string message)
     {
         Change(group_id, user_id, message);
 
@@ -149,14 +183,24 @@ public class ReaderWriter
             Touch(group_id, user_id, name);
             return true;
         }
-        else if (message == "打工")
+        else if (message.Contains("工作") && message.Length <= 5)
         {
-            Work(group_id, user_id, name);
+            Work(group_id, user_id, name, message);
             return true;
         }
         else if (message == "风铃眼熟我")
         {
             Remember(group_id, user_id, name);
+            return true;
+        }
+        else if (message == "初始化属性")
+        {
+            Init(group_id, user_id, name);
+            return true;
+        }
+        else if (message == "重新开始这一天")
+        {
+            Restart(group_id, user_id, name);
             return true;
         }
         else return false;
@@ -170,6 +214,8 @@ public class ReaderWriter
             {
                 Random rd = new Random();
                 int k = rd.Next(2, 5);
+                if (user_id == "3534417975")
+                    k += 5;
                 User.heart += k;
                 if (User.heart >= 200)
                 {
@@ -183,12 +229,19 @@ public class ReaderWriter
                     Api.Group(group_id, Api.GetAtMessage(user_id) + "偶尔让你摸一下头也不是不行...总之今天不要不高兴了！\n好感度上升:" + k + "\n当前好感度:" + User.heart);
                 if (User.heart >= 0 && User.heart < 50)
                     Api.Group(group_id, Api.GetAtMessage(user_id) + "怎么就突然摸我的头了....被吓了一跳呢...\n好感度上升:" + k + "\n当前好感度:" + User.heart);
+                if (user_id == "3534417975")
+                    Api.Group(group_id, Api.GetAtMessage(user_id) + "主人说，要对刀茶好一点...!");
 
 
             }
             else
             {
                 Random rd = new Random();
+                if (user_id == "3534417975" && rd.Next(0, 5) == 0)
+                {
+                    User.heart += 1;
+                    Api.Group(group_id, Api.GetAtMessage(user_id) + "主人说，要对刀茶好一点...!所以刀茶摸摸并不会讨厌的啦！好感度上升:1\n当前好感度:" + User.heart);
+                }
                 int k = 0;
                 if (User.heart >= 0 && User.heart < 50)
                     k = 0;
@@ -223,23 +276,214 @@ public class ReaderWriter
         }
         WriteToFile(User);
     }
-    public static void Work(string group_id, string user_id, string name)
+    public static int GetLv(int lv)
+    {
+        if (lv <= 20)
+            return 1;
+        if (lv <= 30)
+            return 2;
+        if (lv <= 50)
+            return 3;
+        if (lv <= 70)
+            return 4;
+        return 5;
+    }
+    public static int GetWorkResults(int count , float Probability)
+    {
+        int ret = 0;
+        for (int i = 1; i <= count; i++)
+        {
+            if (random.NextDouble() < Probability)
+                ret++;
+        }
+        return ret;
+    }
+    public static void PrintWorkResult(string group_id,string result,int succeed,string box,string type,int NowMoney,int NowTag,int addons)
+    {
+        string message = "【" + box + "】\n本次工作结果：" + result + "\n获得金币：" + addons + "\n当前金币："+ NowMoney;
+        message += "\n";
+        if (result == "优")
+            message += (type + "上升：2\n当前" + type + "：" + NowTag);
+        if (result == "良")
+            message += (type + "上升：1\n当前" + type + "：" + NowTag);
+        if (result == "差")
+            message += (type + "上升：0\n当前" + type + "：" + NowTag);
+        Api.Group(group_id, message);
+    }
+    public static void Work(string group_id, string user_id, string name, string message)
     {
         UserInfo User = GetUserInfo(user_id);
         if (User.CanGet)
         {
             if (DateTime.Now.Day != User.WorkTime)
             {
-                User.money += (User.heart * 3 + 10);
                 User.WorkTime = DateTime.Now.Day;
-                if (User.heart >= 200)
-                    Api.Group(group_id, Api.GetAtMessage(user_id) + "辛苦了，风铃给你揉揉肩膀吧————不要让自己太过于劳累哦！\n获得金币:" + (User.heart * 3 + 10) + "\n当前金币: " + User.money);
-                if (User.heart >= 100 && User.heart < 200)
-                    Api.Group(group_id, "[CQ:at,qq=" + user_id + "] 辛苦了——可以去休息一下了，喝杯水吧？\n获得金币:" + (User.heart * 3 + 10) + "\n当前金币:" + User.money);
-                if (User.heart >= 50 && User.heart < 100)
-                    Api.Group(group_id, "[CQ:at,qq=" + user_id + "] 辛苦了~\n获得金币:" + (User.heart * 3 + 10) + "\n当前金币:" + User.money);
-                if (User.heart >= 0 && User.heart < 50)
-                    Api.Group(group_id, "[CQ:at,qq=" + user_id + "] 工作辛苦！\n获得金币:" + (User.heart * 3 + 10) + "\n当前金币:" + User.money);
+                if (message.Contains("本能"))
+                {
+                    int addons;
+                    int lv = GetLv(User.Courage);
+                    float target = State.sts.Instinct[lv - 1];
+                    int count = 10 + (User.heart / 5);
+                    int succeed = GetWorkResults(count, target * 0.01f);
+                    string box = "";
+                    int good = succeed;
+                    for (int i = 1; i <= count; i++)
+                        if (good > 0)
+                        {
+                            good--;
+                            box += "√";
+                        }
+                        else
+                            box += "X";
+                    string result;
+                    if ((float)succeed / (float)count > 0.7f)
+                    {
+                        User.Courage += 2;
+                        addons = succeed * 4;
+                        result = "优";
+                    }
+                    else if ((float)succeed / (float)count >= 0.25f)
+                    {
+                        User.Courage += 1;
+                        addons = succeed * 2;
+                        result = "良";
+                    }
+                    else
+                    {
+                        User.Courage += 0;
+                        addons = succeed;
+                        result = "差";
+                    }
+                    User.money += addons;
+                    PrintWorkResult(group_id, result, succeed, box, "勇气", User.money, User.Courage, addons);
+                    WriteToFile(User);
+                    return;
+                }
+                if (message.Contains("洞察"))
+                {
+                    int addons;
+                    int lv = GetLv(User.Cautious);
+                    float target = State.sts.Insight[lv - 1];
+                    int count = 10 + (User.heart / 5);
+                    int succeed = GetWorkResults(count, target * 0.01f);
+                    string box = "";
+                    int good = succeed;
+                    for (int i = 1; i <= count; i++)
+                        if (good > 0)
+                        {
+                            good--;
+                            box += "√";
+                        }
+                        else
+                            box += "X";
+                    string result;
+                    if ((float)succeed / (float)count > 0.7f)
+                    {
+                        User.Cautious += 2;
+                        addons = succeed * 4;
+                        result = "优";
+                    }
+                    else if ((float)succeed / (float)count >= 0.25f)
+                    {
+                        User.Cautious += 1;
+                        addons = succeed * 2;
+                        result = "良";
+                    }
+                    else
+                    {
+                        User.Cautious += 0;
+                        addons = succeed;
+                        result = "差";
+                    }
+                    User.money += addons;
+                    PrintWorkResult(group_id, result, succeed, box, "谨慎", User.money, User.Cautious, addons);
+                    WriteToFile(User);
+                    return;
+                }
+                if (message.Contains("沟通"))
+                {
+                    int addons;
+                    int lv = GetLv(User.Discipline);
+                    float target = State.sts.Communication[lv - 1];
+                    int count = 10 + (User.heart / 5);
+                    int succeed = GetWorkResults(count, target * 0.01f);
+                    string box = "";
+                    int good = succeed;
+                    for (int i = 1; i <= count; i++)
+                        if (good > 0)
+                        {
+                            good--;
+                            box += "√";
+                        }
+                        else
+                            box += "X";
+                    string result;
+                    if ((float)succeed / (float)count > 0.7f)
+                    {
+                        User.Discipline += 2;
+                        addons = succeed * 4;
+                        result = "优";
+                    }
+                    else if ((float)succeed / (float)count >= 0.25f)
+                    {
+                        User.Discipline += 1;
+                        addons = succeed * 2;
+                        result = "良";
+                    }
+                    else
+                    {
+                        User.Discipline += 0;
+                        addons = succeed;
+                        result = "差";
+                    }
+                    User.money += addons;
+                    PrintWorkResult(group_id, result, succeed, box, "自律", User.money, User.Discipline, addons);
+                    WriteToFile(User);
+                    return;
+                }
+                if (message.Contains("压迫"))
+                {
+                    int addons;
+                    int lv = GetLv(User.Justice);
+                    float target = State.sts.Oppression[lv - 1];
+                    int count = 10 + (User.heart / 5);
+                    int succeed = GetWorkResults(count, target * 0.01f);
+                    string box = "";
+                    int good = succeed;
+                    for (int i = 1; i <= count; i++)
+                        if (good > 0)
+                        {
+                            good--;
+                            box += "√";
+                        }
+                        else
+                            box += "X";
+                    string result;
+                    if ((float)succeed / (float)count > 0.7f)
+                    {
+                        User.Justice += 2;
+                        addons = succeed * 4;
+                        result = "优";
+                    }
+                    else if ((float)succeed / (float)count >= 0.25f)
+                    {
+                        User.Justice += 1;
+                        addons = succeed * 2;
+                        result = "良";
+                    }
+                    else
+                    {
+                        User.Justice += 0;
+                        addons = succeed;
+                        result = "差";
+                    }
+                    User.money += addons;
+                    PrintWorkResult(group_id, result, succeed, box, "正义", User.money, User.Justice, addons);
+                    WriteToFile(User);
+                    return;
+                }
+                Api.Group(group_id,"工作需要在工作后加上“本能” 或 “洞察” 或 “沟通” 或 “压迫” \n分别对应博士的4个属性 ：“勇气”、“谨慎”、“自律”和“正义”\nps.新版的工作之前，请记得先使用“初始化属性”来获取你的初始属性，另外风铃的日常行为可以通过“查询风铃状态”来获取");
+                return;
             }
             else
             {
@@ -247,15 +491,8 @@ public class ReaderWriter
                 {
                     User.money += 1;
                     Api.Group(group_id, "今天已经很努力了，不要再强迫自己工作了啦，风铃偷偷分给你一枚金币啦。嘘---不要跟别人说哦！\n当前金币: " + User.money);
-                }
-                if (User.heart >= 100 && User.heart < 200)
-                    Api.Group(group_id, "好了好了，该去休息了，现在就不要再工作了。");
-                if (User.heart >= 50 && User.heart < 100)
-                    Api.Group(group_id, "今天" + name + "已经工作过了！已经没有留给你的活了。");
-                if (User.heart >= 0 && User.heart < 50)
-                    Api.Group(group_id, "__假装听不见__");
-                if (DateTime.Now.Day != User.HeartTime && User.heart < 200)
-                    Api.Group(group_id, "为什么你不先摸头啊，这样工作会有效率吗。");
+                }else
+                    Api.Group(group_id, "博士，今天已经对风铃工作过了，如果在工作的话，风铃可是会突破收容单元的哦！");
             }
 
         }
@@ -283,23 +520,37 @@ public class ReaderWriter
         if (message.Contains("SetMoney"))
         {
             User.money = Convert.ToInt32(str[2]);
-            Api.Group(group_id, "那我就把钱给他了哦！");
+            if (str[1] != "635691684" && str[1] != "3534417975")
+                Api.Group(group_id, "！我的钱！主人你不许拿走我的钱！至少..也是给你自己");
+            else
+                Api.Group(group_id, (str[1] == "635691684" ? "主人" : "刀茶") + "要好好的，养活自己！------");
+
         }
         if (message.Contains("SetHeart"))
         {
             int before = User.heart;
             User.heart = Convert.ToInt32(str[2]);
-            if (User.heart >= 200)
+            if (User.heart > 200)
             {
-                Api.Group(group_id, "好感度不能超过200的哦！所以风铃帮姐姐改成200！(笑)");
+                Api.Group(group_id, "好感度不能超过200的哦！所以风铃帮主人改成200！(笑)");
                 User.heart = 200;
             }
             else
             {
-                if (before >= User.heart)
-                    Api.Group(group_id, "为什么要让我去讨厌她......");
                 if (before < User.heart)
                     Api.Group(group_id, "啊...突然想让风铃去喜欢一个人吗...风铃会努力的");
+                if (before > User.heart)
+                    if (str[1] != "635691684" && str[1] != "3534417975")
+                    {
+                        Api.Group(group_id, "为什么要让我去讨厌她......");
+                    }
+                    else
+                    {
+                        Api.Group(group_id,  "不要！才不要讨厌"+ (str[1] == "635691684" ? "你" : "刀茶") + "呢！");
+
+                        User.heart = 200;
+                    }
+
             }
         }
         WriteToFile(User);
@@ -361,7 +612,7 @@ public class ReaderWriter
                 {
                     Tip.Remove(str[1]);
                     user.money -= 100;
-                    Api.Group(group_id, "删除成功！\n本次花费：100金币\n剩余金币："+user.money);
+                    Api.Group(group_id, "删除成功！\n本次花费：100金币\n剩余金币：" + user.money);
                 }
             }
             catch
@@ -369,7 +620,7 @@ public class ReaderWriter
                 Api.Group(group_id, "不存在 " + str[1] + " 的触发词");
             }
         }
-        WriteToFile(user); 
+        WriteToFile(user);
         return true;
     }
     /// <summary>
@@ -406,13 +657,65 @@ public class ReaderWriter
         UserInfo user = GetUserInfo(user_id);
         if (user.CanGet)
         {
-            Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money);
+            string c1 = "\n勇气：" + user.Courage + "(" + GetLv(user.Courage) + ")";
+            string c2 = "\n谨慎：" + user.Cautious + "(" + GetLv(user.Cautious) + ")";
+            string c3 = "\n自律：" + user.Discipline + "(" + GetLv(user.Discipline) + ")";
+            string c4 = "\n正义：" + user.Justice + "(" + GetLv(user.Justice) + ")";
+            Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money + c1 + c2 +c3 +c4) ;
         }
         else
         {
             Api.Group(group_id, name + "是谁？为什么我一点印象都没有？\nps:通过输入\"风铃眼熟我\"来加入测试哦！");
             return;
         }
+    }
+    /// <summary>
+    /// 重新开始这一天
+    /// </summary>
+    /// <param name="group_id"></param>
+    /// <param name="user_id"></param>
+    /// <param name="name"></param>
+    public static void Restart(string group_id, string user_id, string name)
+    {
+        UserInfo user = GetUserInfo(user_id);
+        if( user.money >= 500)
+        {
+            user.money -= 500;
+            user.WorkTime = 0;
+            Api.Group(group_id, "博士你醒了~今天是" + DateTime.Now.Month + "月" + DateTime.Now.Day + "日哦！至于你的钱包为什么少了500金币，我也不是很清楚~");
+        }
+        else
+        {
+            Api.Group(group_id, "错误，执行TT2协议需要500金币。");
+        }
+        WriteToFile(user);
+    }
+    /// <summary>
+    /// 初始化任务属性
+    /// </summary>
+    /// <param name="group_id"></param>
+    /// <param name="user_id"></param>
+    /// <param name="name"></param>
+    public static void Init(string group_id, string user_id, string name)
+    {
+        UserInfo user = GetUserInfo(user_id);
+        if (user.Inited == 1)
+        {
+            Api.Group(group_id, name + "已经初始化过属性了哦！");
+            return;
+        }
+        int all = 200;
+        while (all > 110 || all <= 90)
+        {
+            user.Cautious = random.Next(0, 50);
+            user.Courage = random.Next(0, 50);
+            user.Discipline = random.Next(0, 50);
+            user.Justice = random.Next(0, 50);
+            all = user.Cautious + user.Courage + user.Discipline + user.Justice;
+            user.Inited = 1;
+        }
+        WriteToFile(user);
+        Find(group_id, user_id, name);
     }
     /// <summary>
     /// 记忆
@@ -435,7 +738,7 @@ public class ReaderWriter
             FileStream F = new FileStream(user_id + ".dat", FileMode.Create, FileAccess.Write, FileShare.Write);
             F.Close();
             WriteToFile(user);
-            Api.Group(group_id, "叫做 " + name + " 是吧，风铃会永远铭记在心里的！");
+            Api.Group(group_id, "叫做 " + name + " 是吧，风铃会永远铭记在心里的！\n ps.通过输入\"初始化属性\"来初始化角色属性");
         }
     }
     /// <summary>
@@ -506,7 +809,7 @@ public class ReaderWriter
             return true;
         }
         UserInfo user = GetUserInfo(user_id);
-        
+
         if (str[0].Contains("Vague"))
         {
             if (user.money >= 1000)
@@ -543,7 +846,7 @@ public class ReaderWriter
                 {
                     Tip.Add(str[1].Substring(2), str[2].Substring(2));
                     user.money -= 100;
-                    Api.Group(group_id, "添加成功！那么这个100金币，我就收下了哦~\n当前金币" + user.money); 
+                    Api.Group(group_id, "添加成功！那么这个100金币，我就收下了哦~\n当前金币" + user.money);
                     using (StreamWriter sr2 = new StreamWriter("MessageStatic.dat"))
                     {
                         foreach (var i in Tip)

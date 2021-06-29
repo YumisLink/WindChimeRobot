@@ -4,17 +4,18 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 
+
 namespace Yumis
 {
     class Program
     {
-        public static string same1 = "?????";
-        public static string same2 = "?????";
-        public static string State = "睡觉";
         public static Recuit recuit;
         public static ReaderWriter reader;
         public static DateTag dater;
+        public static State stater;
         public static int dt = 1;
+        public static bool Ai = false;
+        public static int day;
         static void Main(string[] args)
         {
             //OneBotHttpApi.SetServerUri(new Uri("http://127.0.0.1:5700"));
@@ -25,12 +26,20 @@ namespace Yumis
             recuit = new Recuit();
             reader = new ReaderWriter();
             dater = new DateTag();
+            stater = new State();
+            day = DateTime.Now.Day;
 
             Console.WriteLine("Listening...");
             while (true)
             {
                 try
                 {
+                    if (DateTime.Now.Day != day)
+                    {
+                        State.ReNew();
+                        State.Write();
+                    }
+
 
                     dater.Prt();
                     HttpListenerContext context = listener.GetContext();
@@ -40,11 +49,8 @@ namespace Yumis
                     {
                         JsonDocument json = JsonDocument.Parse(input);
                         JsonElement je = json.RootElement;
-                        //Console.WriteLine(je.GetProperty("user_id") +"说了:" + je.GetProperty("raw_message"));
                         response.StatusCode = 200;
                         response.Close();
-                        //Api a = new Api();
-                        //a.Private("635691684",""+je.GetProperty("raw_message"));
                         if (je.GetProperty("post_type").GetString() == "message")
                             if (je.GetProperty("message_type").GetString() == "group")
                             {
@@ -54,6 +60,18 @@ namespace Yumis
                                 string name = je.GetProperty("sender").GetProperty("card").GetString();
                                 if (name == "" || name == null)
                                     name = je.GetProperty("sender").GetProperty("nickname").GetString();
+
+                                if(sp == "查询风铃状态")
+                                {
+                                    Api.Group(group_id, State.Find());
+                                    continue;
+                                }
+                                if (sp == "renew" && user_id == "635691684")
+                                {
+                                    State.ReNew();
+                                    State.Write();
+                                    continue;
+                                }
                                 //上面为获取信息
                                 if (sp == "帮助" || sp == "关于风铃" || sp == "/help")
                                 {
@@ -97,4 +115,5 @@ namespace Yumis
             listener.Stop();
         }
     }
+
 }

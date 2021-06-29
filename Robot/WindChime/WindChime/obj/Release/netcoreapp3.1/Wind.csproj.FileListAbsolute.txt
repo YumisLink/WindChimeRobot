@@ -22,3 +22,4 @@ D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.cspro
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.dll
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.pdb
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.genruntimeconfig.cache
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.csprojAssemblyReference.cache

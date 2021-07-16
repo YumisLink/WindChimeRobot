@@ -16,6 +16,24 @@ struct Tip
 public class DateTag
 {
     List<Tip> list = new List<Tip>();
+    public static bool Main(string group_id, string user_id, string name, string message)
+    {
+        string[] str = message.Split(" ");
+        if (str[0] == "留言")
+        {
+            Question(group_id,user_id,name,message);
+            Api.Group(group_id, "留言成功!博士您给主人的消息将由我来转发了！");
+            return true;
+        }
+        return false;
+    }
+    public static void Question(string group_id, string user_id, string name, string message)
+    {
+        string str = "在群：" + group_id + "\n";
+        str += "的" + name + "(" + user_id + ")说了：\n";
+        str += message;
+        Api.Private("635691684", str);
+    }
     public DateTag()
     {
         try

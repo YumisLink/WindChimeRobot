@@ -161,4 +161,9 @@ public class Imagine
         prt += Api.GetImageMessage(imageiner.image);
         Api.Group(group_id, prt);
     }
+
+}
+public class Imger
+{
+
 }

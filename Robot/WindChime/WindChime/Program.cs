@@ -17,6 +17,8 @@ namespace Yumis
         public static int dt = 1;
         public static bool Ai = false;
         public static int day;
+        public static GameManager gm;
+        public static NewType nt;
         static void Main(string[] args)
         {
             /*
@@ -35,6 +37,8 @@ namespace Yumis
             dater = new DateTag();
             stater = new State();
             img = new Imagine();
+            gm = new GameManager();
+            nt = new NewType();
             day = DateTime.Now.Day;
 
             Console.WriteLine("Listening...");
@@ -67,8 +71,13 @@ namespace Yumis
                                 string name = je.GetProperty("sender").GetProperty("card").GetString();
                                 if (name == "" || name == null)
                                     name = je.GetProperty("sender").GetProperty("nickname").GetString();
-
-                                if(sp == "查询风铃状态")
+                                //Date.Write("收到" + group_id+"群"+name + "发送的" + sp);
+                                if (group_id == "372502869")
+                                {
+                                    NewType.main(user_id, name, sp);
+                                    continue;
+                                }
+                                if (sp == "查询风铃状态")
                                 {
                                     Api.Group(group_id, State.Find());
                                     continue;
@@ -121,6 +130,7 @@ namespace Yumis
                                 else if (Image.Main(group_id, sp)) { }
                                 else if (reader.Answer(group_id, sp)) { }
                                 else if (DateTag.Main(group_id,user_id,name,sp)) { }
+                                else if (War.main(group_id, user_id, name, sp)) { }
                                 //if (NanaClass.GetNa(group_id, sp))
                                 //Lan.GroupNa(je);
                             }

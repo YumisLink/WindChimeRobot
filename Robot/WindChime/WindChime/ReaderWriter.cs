@@ -53,7 +53,43 @@ public struct UserInfo
     /// 工作计数
     /// </summary>
     public int WorkCount;
+    /// <summary>
+    /// 是否抑制hokma
+    /// </summary>
+    public int Hokma;
+    /// <summary>
+    /// 萌新金币翻倍次数
+    /// </summary>
+    public int newType;
+    /// <summary>
+    /// 名称
+    /// </summary>
+    public string name;
+
+
+    /// <summary>
+    /// 每天可以单挑的次数
+    /// </summary>
+    public int EGOWeapon;
+    public int EGOArmor;
+    public int SoloCount;
+    
+    /// <summary>
+    /// 正在挑战的异想体
+    /// </summary>
+    public int NowBoss;
+    /*
+    /// <summary>
+    /// 异想体剩余生命值
+    /// </summary>
+    public int leaveHp;
+    /// <summary>
+    /// 异想体剩余生命值
+    /// </summary>
+    public int leaveMp;
+    */
 };
+
 
 public class ReaderWriter
 {
@@ -77,9 +113,18 @@ public class ReaderWriter
         ret.Discipline = 0;
         ret.Justice = 0;
         ret.WorkCount = 2;
+        ret.Hokma = 0;
+        ret.newType = 10;
+        ret.name = "";
+        ret.SoloCount = 2;
+        ret.EGOWeapon = 0;
+        ret.EGOArmor = 0;
+        ret.NowBoss = 0;
+        //ret.leaveHp = 0;
+        //ret.leaveMp = 0;
         try
         {
-            using (StreamReader sr = new StreamReader(user_id + ".dat"))
+            using (StreamReader sr = new StreamReader("user/"+user_id + ".dat"))
             {
                 ret.CanGet = true;
                 string line;
@@ -106,28 +151,50 @@ public class ReaderWriter
                         ret.Justice = Convert.ToInt32(line);
                     if (cnt == 10)
                         ret.WorkCount = Convert.ToInt32(line);
+                    if (cnt == 11)
+                        ret.Hokma = Convert.ToInt32(line);
+                    if (cnt == 12)
+                        ret.newType = Convert.ToInt32(line);
+                    if (cnt == 13)
+                        ret.name = line;
+                    if (cnt == 14)
+                        ret.EGOWeapon = Convert.ToInt32(line);
+                    if (cnt == 15)
+                        ret.EGOArmor = Convert.ToInt32(line);
+                    if (cnt == 16)
+                        ret.SoloCount = Convert.ToInt32(line);
                     cnt++;
                 }
             }
         }
         catch
         {
+            ret.CanGet = false;
             return ret;
         }
+        if (ret.Justice >= 100 && ret.Hokma == 0) ret.Justice = 100;
+        if (ret.Discipline >= 100 && ret.Hokma == 0) ret.Discipline = 100;
+        if (ret.Cautious >= 100 && ret.Hokma == 0) ret.Cautious = 100;
+        if (ret.Courage >= 100 && ret.Hokma == 0) ret.Courage = 100;
+        if (ret.Justice >= 150 && ret.Hokma == 0) ret.Justice = 150;
+        if (ret.Discipline >= 150 && ret.Hokma == 0) ret.Discipline = 150;
+        if (ret.Cautious >= 150 && ret.Hokma == 0) ret.Cautious = 150;
+        if (ret.Courage >= 150 && ret.Hokma == 0) ret.Courage = 150;
         if (ret.WorkTime != DateTime.Now.Day)
         {
             ret.WorkTime = DateTime.Now.Day;
             ret.WorkCount = 2;
+            ret.SoloCount = 2;
         }
         if (ret.Inited == 0)
         {
             int all = 0;
-            while (all > 110 || all <= 90)
+            while (all > 70 || all <= 50)
             {
-                ret.Cautious = random.Next(0, 50);
-                ret.Courage = random.Next(0, 50);
-                ret.Discipline = random.Next(0, 50);
-                ret.Justice = random.Next(0, 50);
+                ret.Cautious = random.Next(0, 30);
+                ret.Courage = random.Next(0, 30);
+                ret.Discipline = random.Next(0, 30);
+                ret.Justice = random.Next(0, 30);
                 all = ret.Cautious + ret.Courage + ret.Discipline + ret.Justice;
                 ret.Inited = 1;
             }
@@ -137,7 +204,7 @@ public class ReaderWriter
     }
     public static void WriteToFile(UserInfo user)
     {
-        using (StreamWriter sw = new StreamWriter(user.id + ".dat"))
+        using (StreamWriter sw = new StreamWriter("user/" + user.id + ".dat"))
         {
             sw.WriteLine(user.HeartTime);
             sw.WriteLine(user.heart);
@@ -149,6 +216,12 @@ public class ReaderWriter
             sw.WriteLine(user.Discipline);
             sw.WriteLine(user.Justice);
             sw.WriteLine(user.WorkCount);
+            sw.WriteLine(user.Hokma);
+            sw.WriteLine(user.newType);
+            sw.WriteLine(user.name);
+            sw.WriteLine(user.EGOWeapon);
+            sw.WriteLine(user.EGOArmor);
+            sw.WriteLine(user.SoloCount);
         }
     }
     public ReaderWriter()
@@ -230,11 +303,17 @@ public class ReaderWriter
             Restart(group_id, user_id, name);
             return true;
         }
+        else if (message == "抑制Hokma核心")
+        {
+            Api.Group(group_id, "还没有做,还在TODO里面...主要是不知道怎么做,但是就是想限制一下属性上限.有想法的群众可以给我留言.");
+            return true;
+        }
         else return false;
     }
     public static void Touch(string group_id, string user_id, string name)
     {
         UserInfo User = GetUserInfo(user_id);
+        User.name = name;
         if (User.CanGet)
         {
             if (DateTime.Now.Day != User.HeartTime)
@@ -307,11 +386,11 @@ public class ReaderWriter
     {
         if (lv <= 20)
             return 1;
-        if (lv <= 30)
+        if (lv <= 40)
             return 2;
-        if (lv <= 50)
+        if (lv <= 60)
             return 3;
-        if (lv <= 70)
+        if (lv <= 80)
             return 4;
         return 5;
     }
@@ -325,25 +404,71 @@ public class ReaderWriter
         }
         return ret;
     }
-    public static void PrintWorkResult(string group_id,string result,int succeed,string box,string type,int NowMoney,int NowTag,int addons,int WorkCount)
+    public static void PrintWorkResult(string group_id,string result,int succeed,string box,string type,int NowMoney,int NowTag,int addons,int WorkCount,int Hokma,int newType)
     {
+        if (newType > 0)
+            addons *= 5;
         string message = "【" + box + "】\n本次工作结果：" + result + "\n获得金币：" + addons + "\n当前金币："+ NowMoney;
         message += "\n";
-        if (result == "优")
-            message += (type + "上升：5\n当前" + type + "：" + NowTag);
-        if (result == "良")
-            message += (type + "上升：3\n当前" + type + "：" + NowTag);
-        if (result == "差")
-            message += (type + "上升：1\n当前" + type + "：" + NowTag);
+        if (Hokma == 1)
+        {
+            if (NowTag >= 150)
+            {
+                message += type+"150,已达到最大值!!!";
+            }
+            else
+            {
+                if (result == "优")
+                    message += (type + "上升：5\n当前" + type + "：" + NowTag);
+                if (result == "良")
+                    message += (type + "上升：3\n当前" + type + "：" + NowTag);
+                if (result == "差")
+                    message += (type + "上升：1\n当前" + type + "：" + NowTag);
+            }
+        }
+        else
+        {
+            if(NowTag >= 100)
+            {
+                message += type+"100,已达到上限,请先抑制Hokma核心之后才能提升!!!";
+            }
+            else
+            {
+                if (result == "优")
+                    message += (type + "上升：5\n当前" + type + "：" + NowTag);
+                if (result == "良")
+                    message += (type + "上升：3\n当前" + type + "：" + NowTag);
+                if (result == "差")
+                    message += (type + "上升：1\n当前" + type + "：" + NowTag);
+            }
+        }
         message += "\n剩余工作次数:" + WorkCount;
+        if (newType > 0)
+        {
+            message += "\n新人将拥有十次的工作金额五倍的能力,您现在剩余的次数:" + (newType - 1);
+        }
         Api.Group(group_id, message);
     }
     public static int AddExcellent = 5;
     public static int AddGood = 3;
     public static int AddBad = 1;
+    public static float GetTarget(float lv,int val)
+    {
+        if (val > 80)
+            return ((val - 80) * 0.0025f) + lv;
+        if (val > 60)
+            return ((val - 60) * 0.0025f) + lv;
+        if (val > 40)
+            return ((val - 40) * 0.0025f) + lv;
+        if (val > 20)
+            return ((val - 20) * 0.0025f) + lv;
+        return ((val) * 0.0025f) + lv;
+
+    }
     public static void Work(string group_id, string user_id, string name, string message)
     {
         UserInfo User = GetUserInfo(user_id);
+        User.name = name;
         if (User.CanGet)
         {
             if (User.WorkCount > 0)
@@ -354,9 +479,9 @@ public class ReaderWriter
                     User.WorkCount--;
                     int addons;
                     int lv = GetLv(User.Courage);
-                    float target = State.sts.Instinct[lv - 1];
+                    float target = GetTarget(State.sts.Instinct[lv - 1] * 0.01f, User.Courage);
                     int count = 10 + (User.heart / 5);
-                    int succeed = GetWorkResults(count, target * 0.01f);
+                    int succeed = GetWorkResults(count, target);
                     string box = "";
                     int good = succeed;
                     for (int i = 1; i <= count; i++)
@@ -387,7 +512,12 @@ public class ReaderWriter
                         result = "差";
                     }
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "勇气", User.money, User.Courage, addons, User.WorkCount);
+                    PrintWorkResult(group_id, result, succeed, box, "勇气", User.money, User.Courage, addons, User.WorkCount,User.Hokma, User.newType);
+                    if (User.newType > 0)
+                    {
+                        User.money += (addons) * 4;
+                        User.newType--;
+                    }
                     WriteToFile(User);
                     return;
                 }
@@ -396,9 +526,9 @@ public class ReaderWriter
                     User.WorkCount--;
                     int addons;
                     int lv = GetLv(User.Cautious);
-                    float target = State.sts.Insight[lv - 1];
+                    float target = GetTarget(State.sts.Insight[lv - 1] * 0.01f, User.Cautious);
                     int count = 10 + (User.heart / 5);
-                    int succeed = GetWorkResults(count, target * 0.01f);
+                    int succeed = GetWorkResults(count, target);
                     string box = "";
                     int good = succeed;
                     for (int i = 1; i <= count; i++)
@@ -429,7 +559,12 @@ public class ReaderWriter
                         result = "差";
                     }
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "谨慎", User.money, User.Cautious, addons, User.WorkCount);
+                    PrintWorkResult(group_id, result, succeed, box, "谨慎", User.money, User.Cautious, addons, User.WorkCount, User.Hokma, User.newType);
+                    if (User.newType > 0)
+                    {
+                        User.money += (addons) * 4;
+                        User.newType--;
+                    }
                     WriteToFile(User);
                     return;
                 }
@@ -438,9 +573,9 @@ public class ReaderWriter
                     User.WorkCount--;
                     int addons;
                     int lv = GetLv(User.Discipline);
-                    float target = State.sts.Communication[lv - 1];
+                    float target = GetTarget(State.sts.Communication[lv - 1] * 0.01f, User.Discipline);
                     int count = 10 + (User.heart / 5);
-                    int succeed = GetWorkResults(count, target * 0.01f);
+                    int succeed = GetWorkResults(count, target);
                     string box = "";
                     int good = succeed;
                     for (int i = 1; i <= count; i++)
@@ -471,7 +606,12 @@ public class ReaderWriter
                         result = "差";
                     }
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "自律", User.money, User.Discipline, addons, User.WorkCount);
+                    PrintWorkResult(group_id, result, succeed, box, "自律", User.money, User.Discipline, addons, User.WorkCount, User.Hokma, User.newType);
+                    if (User.newType > 0)
+                    {
+                        User.money += (addons) * 4;
+                        User.newType--;
+                    }
                     WriteToFile(User);
                     return;
                 }
@@ -480,9 +620,9 @@ public class ReaderWriter
                     User.WorkCount--;
                     int addons;
                     int lv = GetLv(User.Justice);
-                    float target = State.sts.Oppression[lv - 1];
+                    float target = GetTarget(State.sts.Oppression[lv - 1] * 0.01f, User.Justice);
                     int count = 10 + (User.heart / 5);
-                    int succeed = GetWorkResults(count, target * 0.01f);
+                    int succeed = GetWorkResults(count, target);
                     string box = "";
                     int good = succeed;
                     for (int i = 1; i <= count; i++)
@@ -513,7 +653,12 @@ public class ReaderWriter
                         result = "差";
                     }
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "正义", User.money, User.Justice, addons,User.WorkCount);
+                    PrintWorkResult(group_id, result, succeed, box, "正义", User.money, User.Justice, addons,User.WorkCount, User.Hokma, User.newType);
+                    if (User.newType > 0)
+                    {
+                        User.money += (addons) * 4;
+                        User.newType--;
+                    }
                     WriteToFile(User);
                     return;
                 }
@@ -692,11 +837,15 @@ public class ReaderWriter
         UserInfo user = GetUserInfo(user_id);
         if (user.CanGet)
         {
-            string c1 = "\n勇气：" + user.Courage + "(" + GetLv(user.Courage) + ")";
-            string c2 = "\n谨慎：" + user.Cautious + "(" + GetLv(user.Cautious) + ")";
-            string c3 = "\n自律：" + user.Discipline + "(" + GetLv(user.Discipline) + ")";
-            string c4 = "\n正义：" + user.Justice + "(" + GetLv(user.Justice) + ")";
-            Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money + c1 + c2 +c3 +c4) ;
+            string c1 = "\n勇气：" + user.Courage + "(" + GetLv(user.Courage) + "级)";
+            string c2 = "\n谨慎：" + user.Cautious + "(" + GetLv(user.Cautious) + "级)";
+            string c3 = "\n自律：" + user.Discipline + "(" + GetLv(user.Discipline) + "级)";
+            string c4 = "\n正义：" + user.Justice + "(" + GetLv(user.Justice) + "级)";
+            string c5 = "\n当前佩戴EGO武器：" + GameManager.weapon[user.EGOWeapon].name + "\n当前佩戴EGO护甲：" + GameManager.armor[user.EGOArmor].name;
+            Hero h = new Hero(user);
+            c5 += "\n" + h.ToString();
+            Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money + c1 + c2 +c3 +c4+c5) ;
+
         }
         else
         {
@@ -713,15 +862,15 @@ public class ReaderWriter
     public static void Restart(string group_id, string user_id, string name)
     {
         UserInfo user = GetUserInfo(user_id);
-        if( user.money >= 500)
+        if( user.money >= 2000)
         {
-            user.money -= 500;
+            user.money -= 2000;
             user.WorkTime = 0;
-            Api.Group(group_id, "博士你醒了~今天是" + DateTime.Now.Month + "月" + DateTime.Now.Day + "日哦！至于你的钱包为什么少了500金币，我也不是很清楚~");
+            Api.Group(group_id, "博士你醒了~今天是" + DateTime.Now.Month + "月" + DateTime.Now.Day + "日哦！至于你的钱包为什么少了2000金币，我也不是很清楚~");
         }
         else
         {
-            Api.Group(group_id, "错误，执行TT2协议需要500金币。");
+            Api.Group(group_id, "错误，执行TT2协议需要2000金币。");
         }
         WriteToFile(user);
     }
@@ -761,16 +910,17 @@ public class ReaderWriter
         UserInfo user = GetUserInfo(user_id);
         if (user.CanGet)
         {
-            using (StreamReader sr = new StreamReader(user_id + ".dat"))
+            using (StreamReader sr = new StreamReader("user/" + user_id + ".dat"))
             {
                 Api.Group(group_id, "诶,,,博士把我忘了吗...没事的，风铃一直记得住博士的...");
             }
         }
         else
         {
-            FileStream F = new FileStream(user_id + ".dat", FileMode.Create, FileAccess.Write, FileShare.Write);
+            FileStream F = new FileStream("user/" + user_id + ".dat", FileMode.Create, FileAccess.Write, FileShare.Write);
             F.Close();
             Init(user_id);
+            user.name = name;
             WriteToFile(user);
             Api.Group(group_id, "叫做 " + name + " 是吧，风铃会永远铭记在心里的!");
             Find(group_id,user_id,name);

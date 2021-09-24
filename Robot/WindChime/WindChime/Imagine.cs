@@ -64,7 +64,7 @@ public class Imagine
             Console.WriteLine(e);
             Api.Private("635691684", e.ToString());
             Api.Private("635691684", "主人！Imagine类初始化出现问题，系统已经关闭，请你重启！");
-            using (StreamReader sr = new StreamReader("Imagine.dat")) ;
+            StreamReader sr = new StreamReader("Imagine.dat");
         }
     }
     public void Reload()
@@ -111,7 +111,7 @@ public class Imagine
             Console.WriteLine(e);
             Api.Private("635691684", e.ToString());
             Api.Private("635691684", "主人！Imagine类初始化出现问题，系统已经关闭，请你重启！");
-            using (StreamReader sr = new StreamReader("Imagine.dat")) ;
+            StreamReader sr = new StreamReader("Imagine.dat");
         }
     }
     public bool Main(string group_id, string user_id, string name, string message)
@@ -161,9 +161,5 @@ public class Imagine
         prt += Api.GetImageMessage(imageiner.image);
         Api.Group(group_id, prt);
     }
-
-}
-public class Imger
-{
 
 }

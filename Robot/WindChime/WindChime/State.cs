@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 public struct States
@@ -12,6 +13,8 @@ public struct States
 
 public class State{
     public static States sts;
+    public static Dictionary<string,string> Check = new Dictionary<string, string>();
+    public static List<string> groups = new List<string>();
     public State()
     {
         sts.Instinct = new float[5];
@@ -19,6 +22,46 @@ public class State{
         sts.Communication = new float[5];
         sts.Oppression = new float[5];
         GetInfo();
+        Init();
+    }
+    public static void Save()
+    {
+        using (StreamWriter sw = new StreamWriter("SignUp.dat"))
+        {
+            foreach (var i in Check)
+            {
+                sw.WriteLine(i.Key + " " + i.Value);
+            }
+        }
+    }
+    public static void GroupsSend(string message)
+    {
+        foreach (var i in groups)
+            Api.Group(i, message);
+    }
+    public static void Init()
+    {
+        using (StreamReader sr = new StreamReader("Groups.dat"))
+        {
+            string line = "";
+            while ((line = sr.ReadLine()) != null)
+            {
+                groups.Add(line);
+            }
+        }
+    }
+    public static void Register(string group_id, string user_id, string name)
+    {
+        try
+        {
+            Check.Add(user_id, name);
+            Api.Group(group_id, name + "报名成功！");
+            Save();
+        }
+        catch
+        {
+            Api.Group(group_id, "已经报名过了哦！");
+        }
     }
     public static string GetMessage(float r)
     {

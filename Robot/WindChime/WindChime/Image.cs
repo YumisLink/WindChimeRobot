@@ -7,7 +7,7 @@ using System.Text.Json;
 
 public class Image
 {
-    public static bool Main(string group_id,string message)
+    public static bool Main(string group_id,string user_id,string name,string message)
     {
         if (message == "来点猫图")
         {
@@ -37,6 +37,32 @@ public class Image
                 return true;
             }
             else return false;
+        }else if (message == "风铃")
+        {
+            UserInfo User = ReaderWriter.GetUserInfo(user_id);
+            int k = 0;
+            if (User.heart >= 0 && User.heart < 50)
+                k = EGOSTRONGER.random.Next(0, 3);
+            if (User.heart >= 50 && User.heart < 100)
+                k = EGOSTRONGER.random.Next(0, 5);
+            if (User.heart >= 100)
+                k = EGOSTRONGER.random.Next(0, 8);
+            if (k == 0)
+                Api.Group(group_id, "泰拉的天灾吗？似乎在脑叶公司也有，只是被称作考验...啊不是那种的吗？");
+            if (k == 1)
+                Api.Group(group_id, "博士，你吃了那么多源石，要不要试试脑叶公司特产的Cogito？效果跟源石差不多，都是可以恢复理智的。你说我是骗你的？AI不会说谎的！");
+            if (k == 2)
+                Api.Group(group_id, "你想唤醒你的EGO吗？博士，脑叶公司里面的员工都有EGO，那些都是Carmen的功劳，不过那些EGO都不是他们自己的。");
+            if (k == 3)
+                Api.Group(group_id, "风铃累了，先去睡一觉了，没有二级警报就不要叫我了。");
+            if (k == 4)
+                Api.Group(group_id, "博士，可以为我戴上我的小礼帽吗？谢谢你...");
+            if (k == 5)
+                Api.Group(group_id, "博士，实际上我是在违反《人工智能伦理修订案》的情况下制造出来的，虽然这么说，但是在SEPHIRAH中，也是有曾经是首脑的调率者的存在。");
+            if (k == 6)
+                Api.Group(group_id, "能够在闲暇的时间在博士的身边，对于风铃来说，就算是一种休息了吧！");
+            if (k == 7)
+                Api.Group(group_id, "脑叶公司的奇点技术，就是Cogito，虽然说是能源公司。但是实际上是吧怪物产生的脑啡肽转化成能量，你看，那些看起来像是怪物，实际上很多都是脑叶公司的员工。");
         }
         return false;
     }

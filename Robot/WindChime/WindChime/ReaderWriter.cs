@@ -1,93 +1,116 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.IO;
 public struct UserInfo
 {
     public bool CanGet;
     /// <summary>
-    /// ºÃ¸Ğ¶È
+    /// å¥½æ„Ÿåº¦
     /// </summary>
     public int heart;
     /// <summary>
-    /// ½ğ±Ò
+    /// é‡‘å¸
     /// </summary>
     public int money;
     /// <summary>
-    /// Ç©µ½ÈÕÆÚ
+    /// ç­¾åˆ°æ—¥æœŸ
     /// </summary>
     public int HeartTime;
     /// <summary>
-    /// ¹¤×÷ÈÕÆÚ
+    /// å·¥ä½œæ—¥æœŸ
     /// </summary>
     public int WorkTime;
     /// <summary>
-    /// QQºÅ
+    /// QQå·
     /// </summary>
     public string id;
     /// <summary>
-    /// Ôö¼Ó´Ê»ãµÄ´ÎÊı
+    /// å¢åŠ è¯æ±‡çš„æ¬¡æ•°
     /// </summary>
     public int AddTimes;
     /// <summary>
-    /// ÊÇ·ñ³õÊ¼»¯¹ı
+    /// æ˜¯å¦åˆå§‹åŒ–è¿‡
     /// </summary>
     public int Inited;
 
     /// <summary>
-    /// ÓÂÆø
+    /// å‹‡æ°”
     /// </summary>
     public int Courage;
     /// <summary>
-    /// ½÷É÷
+    /// è°¨æ…
     /// </summary>
     public int Cautious;
     /// <summary>
-    /// ×ÔÂÉ
+    /// è‡ªå¾‹
     /// </summary>
     public int Discipline;
     /// <summary>
-    /// ÕıÒå
+    /// æ­£ä¹‰
     /// </summary>
     public int Justice;
     /// <summary>
-    /// ¹¤×÷¼ÆÊı
+    /// å·¥ä½œè®¡æ•°
     /// </summary>
     public int WorkCount;
     /// <summary>
-    /// ÊÇ·ñÒÖÖÆhokma
+    /// æ˜¯å¦æŠ‘åˆ¶hokma
     /// </summary>
     public int Hokma;
     /// <summary>
-    /// ÃÈĞÂ½ğ±Ò·­±¶´ÎÊı
+    /// èŒæ–°é‡‘å¸ç¿»å€æ¬¡æ•°
     /// </summary>
     public int newType;
     /// <summary>
-    /// Ãû³Æ
+    /// åç§°
     /// </summary>
     public string name;
 
 
     /// <summary>
-    /// Ã¿Ìì¿ÉÒÔµ¥ÌôµÄ´ÎÊı
+    /// æ¯å¤©å¯ä»¥å•æŒ‘çš„æ¬¡æ•°
     /// </summary>
     public int EGOWeapon;
     public int EGOArmor;
     public int SoloCount;
-    
+
     /// <summary>
-    /// ÕıÔÚÌôÕ½µÄÒìÏëÌå
+    /// EGOæ­¦å™¨å¢å¹…
+    /// </summary>
+    public int WeaponIncrease;
+    /// <summary>
+    /// EGOé˜²å…·å¢å¹…
+    /// </summary>
+    public int ArmorIncrease;
+
+    /// <summary>
+    /// æ­£åœ¨æŒ‘æˆ˜çš„å¼‚æƒ³ä½“
     /// </summary>
     public int NowBoss;
-    /*
     /// <summary>
-    /// ÒìÏëÌåÊ£ÓàÉúÃüÖµ
+    /// æ’å
     /// </summary>
-    public int leaveHp;
+    public int Rank;
     /// <summary>
-    /// ÒìÏëÌåÊ£ÓàÉúÃüÖµ
+    /// ä»Šå¤©æ˜¯å¦é¢†å–å¤©æ¢¯å¥–åŠ±
     /// </summary>
-    public int leaveMp;
-    */
+    public int LadderRew;
+    /// <summary>
+    /// æ‰€æœ‰çš„æ­¦å™¨
+    /// </summary>
+    public List<bool> AllWeapon;
+    /// <summary>
+    /// æ‰€æœ‰çš„æ­¦å™¨
+    /// </summary>
+    public List<bool> AllArmor;
+    /// <summary>
+    /// æŠ‘åˆ¶çš„æ ¸å¿ƒ
+    /// </summary>
+    public List<bool> Inhibition;
+    /// <summary>
+    /// æœ€åç™»å½•æ—¶é—´
+    /// </summary>
+    public DateTime LastestLogin;
 };
 
 
@@ -120,15 +143,31 @@ public class ReaderWriter
         ret.EGOWeapon = 0;
         ret.EGOArmor = 0;
         ret.NowBoss = 0;
-        //ret.leaveHp = 0;
-        //ret.leaveMp = 0;
+        ret.WeaponIncrease = 0;
+        ret.ArmorIncrease = 0;
+        ret.Rank = -1;
+        ret.LadderRew = 0;
+        ret.AllArmor = new List<bool>();
+        ret.AllWeapon = new List<bool>();
+        ret.Inhibition = new List<bool>();
+        ret.LastestLogin = DateTime.Now;
+        for (int i = 0; i < GameManager.weapon.Count + 10; i++)
+        {
+            ret.AllArmor.Add(false);
+            ret.AllWeapon.Add(false);
+        }
+        for (int i = 0; i < 15; i++)
+            ret.Inhibition.Add(false);
+        ret.AllArmor[0] = true; 
+        ret.AllWeapon[0] = true;
         try
         {
-            using (StreamReader sr = new StreamReader("user/"+user_id + ".dat"))
+            using (StreamReader sr = new StreamReader("user/" + user_id + ".dat"))
             {
                 ret.CanGet = true;
                 string line;
                 int cnt = 1;
+                Console.WriteLine(user_id);
                 while ((line = sr.ReadLine()) != null)
                 {
                     if (cnt == 1)
@@ -163,38 +202,81 @@ public class ReaderWriter
                         ret.EGOArmor = Convert.ToInt32(line);
                     if (cnt == 16)
                         ret.SoloCount = Convert.ToInt32(line);
+                    if (cnt == 17)
+                        ret.WeaponIncrease = Convert.ToInt32(line);
+                    if (cnt == 18)
+                        ret.ArmorIncrease = Convert.ToInt32(line);
+                    if (cnt == 19)
+                    {
+                        string[] str = line.Split(" ");
+                        ret.Rank = Convert.ToInt32(str[1]);
+                        ret.LadderRew = Convert.ToInt32(str[2]);
+                    }
+                    if (cnt == 20)
+                    {
+                        string[] str = line.Split(" ");
+                        for (int i = 1; i < str.Length-1; i++)
+                            ret.AllWeapon[Convert.ToInt32(str[i])] = true;
+                    }
+                    if (cnt == 21)
+                    {
+                        string[] str = line.Split(" ");
+                        for (int i = 1; i < str.Length-1; i++)
+                            ret.AllArmor[Convert.ToInt32(str[i])] = true;
+                    }
+                    if (cnt == 22)
+                    {
+                        string[] str = line.Split(" ");
+                        int year = Convert.ToInt32(str[1]), month = Convert.ToInt32(str[2]), day = Convert.ToInt32(str[3]);
+                        ret.LastestLogin = new DateTime(year,month,day);
+                    }
+                    if (cnt == 23)
+                    {
+                        string[] str = line.Split(" ");
+                        for (int i = 1; i < str.Length - 1; i++)
+                            ret.Inhibition[Convert.ToInt32(str[i])] = true;
+                    }
                     cnt++;
                 }
             }
         }
-        catch
+        catch(Exception e)
         {
+            Console.WriteLine(e);
+            ret.id = "0";
             ret.CanGet = false;
             return ret;
         }
-        if (ret.Justice >= 100 && ret.Hokma == 0) ret.Justice = 100;
-        if (ret.Discipline >= 100 && ret.Hokma == 0) ret.Discipline = 100;
-        if (ret.Cautious >= 100 && ret.Hokma == 0) ret.Cautious = 100;
-        if (ret.Courage >= 100 && ret.Hokma == 0) ret.Courage = 100;
-        if (ret.Justice >= 150 && ret.Hokma == 0) ret.Justice = 150;
-        if (ret.Discipline >= 150 && ret.Hokma == 0) ret.Discipline = 150;
-        if (ret.Cautious >= 150 && ret.Hokma == 0) ret.Cautious = 150;
-        if (ret.Courage >= 150 && ret.Hokma == 0) ret.Courage = 150;
+        if (!ret.AllArmor[ret.EGOArmor]) ret.EGOArmor = 0;
+        if (!ret.AllWeapon[ret.EGOWeapon]) ret.EGOWeapon = 0;
+
+        if (ret.Justice >= 120 && ret.Hokma == 0) ret.Justice = 120;
+        if (ret.Discipline >= 120 && ret.Hokma == 0) ret.Discipline = 120;
+        if (ret.Cautious >= 120 && ret.Hokma == 0) ret.Cautious = 120;
+        if (ret.Courage >= 120 && ret.Hokma == 0) ret.Courage = 120;
+        if (ret.Justice >= 180 && ret.Hokma == 0) ret.Justice = 180;
+        if (ret.Discipline >= 180 && ret.Hokma == 0) ret.Discipline = 180;
+        if (ret.Cautious >= 180 && ret.Hokma == 0) ret.Cautious = 180;
+        if (ret.Courage >= 180 && ret.Hokma == 0) ret.Courage = 180;
         if (ret.WorkTime != DateTime.Now.Day)
         {
             ret.WorkTime = DateTime.Now.Day;
-            ret.WorkCount = 2;
+            ret.WorkCount = 3;
+            if (ret.Inhibition[0])
+                ret.WorkCount++;
             ret.SoloCount = 2;
+            ret.LadderRew = 0;
+            ret.newType += 2;
         }
         if (ret.Inited == 0)
         {
             int all = 0;
-            while (all > 70 || all <= 50)
+            while (all > 170 || all <= 120)
             {
-                ret.Cautious = random.Next(0, 30);
-                ret.Courage = random.Next(0, 30);
-                ret.Discipline = random.Next(0, 30);
-                ret.Justice = random.Next(0, 30);
+                ret.Cautious = random.Next(15, 50);
+                ret.Courage = random.Next(15, 50);
+                ret.Discipline = random.Next(15, 50);
+                ret.Justice = random.Next(15, 50);
                 all = ret.Cautious + ret.Courage + ret.Discipline + ret.Justice;
                 ret.Inited = 1;
             }
@@ -215,14 +297,47 @@ public class ReaderWriter
             sw.WriteLine(user.Cautious);
             sw.WriteLine(user.Discipline);
             sw.WriteLine(user.Justice);
-            sw.WriteLine(user.WorkCount);
+            sw.WriteLine(user.WorkCount);//line10
             sw.WriteLine(user.Hokma);
             sw.WriteLine(user.newType);
             sw.WriteLine(user.name);
             sw.WriteLine(user.EGOWeapon);
             sw.WriteLine(user.EGOArmor);
             sw.WriteLine(user.SoloCount);
+            sw.WriteLine(user.WeaponIncrease);
+            sw.WriteLine(user.ArmorIncrease);
+            sw.WriteLine("å¤©æ¢¯èµ› "+user.Rank + " " + user.LadderRew);
+            sw.WriteLine(EGOW(user));//line20
+            sw.WriteLine(EGOA(user));
+            sw.WriteLine("å¹´æœˆæ—¥ " + DateTime.Now.Year + " "+ DateTime.Now.Month + " " + DateTime.Now.Day);
+            sw.WriteLine(Inhibition(user));
         }
+    }
+    public static string Inhibition(UserInfo user)
+    {
+        string str = "å·²ç»æŠ‘åˆ¶çš„æ ¸å¿ƒ ";
+        for (int i = 0; i < user.Inhibition.Count; i++)
+            if (user.Inhibition[i])
+                str += i + " ";
+        return str;
+    }
+    public static string EGOW(UserInfo user)
+    {
+        string str = "EGOæ­¦å™¨ ";
+        for (int i = 0; i < user.AllWeapon.Count; i++)
+            if (user.AllWeapon[i])
+                str += i+" ";
+        str.Remove(str.Length-1);
+        return str;
+    }
+    public static string EGOA(UserInfo user)
+    {
+        string str = "EGOæŠ¤ç”² ";
+        for (int i = 0; i < user.AllArmor.Count; i++)
+            if (user.AllArmor[i])
+                str += i + " ";
+        str.Remove(str.Length-1);
+        return str;
     }
     public ReaderWriter()
     {
@@ -263,9 +378,20 @@ public class ReaderWriter
         }
         catch
         {
-            Api.Private("635691684", "Ö÷ÈË£¡ReaderWriteÀà³õÊ¼»¯³öÏÖÎÊÌâ£¬ÏµÍ³ÒÑ¾­¹Ø±Õ£¬ÇëÄãÖØÆô£¡");
-            using (StreamReader sr = new StreamReader("message.dat")) ;
+            Api.Private("635691684", "å¦ˆå¦ˆï¼ReaderWriteç±»åˆå§‹åŒ–å‡ºç°é—®é¢˜ï¼Œç³»ç»Ÿå·²ç»å…³é—­ï¼Œè¯·ä½ é‡å¯ï¼");
+            StreamReader sr = new StreamReader("message.dat");
         }
+    }
+    public static int GetUserHaveEGOs(UserInfo usf)
+    {
+        int ret = 0;
+        foreach (var a in usf.AllArmor)
+            if (a == true)
+                ret++;
+        foreach (var a in usf.AllWeapon)
+            if (a == true)
+                ret++;
+        return ret;
     }
 
 
@@ -273,39 +399,43 @@ public class ReaderWriter
     {
         Change(group_id, user_id, message);
 
-        if (message == "²éÑ¯")
+        if (message == "æŸ¥è¯¢")
         {
             Find(group_id, user_id, name);
             return true;
         }
-        else if (message == "ÃşÃş·çÁå")
+        else if (message == "æ‘¸æ‘¸é£é“ƒ")
         {
             Touch(group_id, user_id, name);
             return true;
         }
-        else if ((message.Contains("¹¤×÷") && message.Length <= 5) || (message.Contains("´ò¹¤") && message.Length <= 5))
+        else if ((message.Contains("å·¥ä½œ") && message.Length <= 5) || (message.Contains("æ‰“å·¥") && message.Length <= 5))
         {
             Work(group_id, user_id, name, message);
             return true;
         }
-        else if (message == "·çÁåÑÛÊìÎÒ")
+        else if (message == "æ³¨å†Œ")
         {
             Remember(group_id, user_id, name);
             return true;
         }
-        else if (message == "³õÊ¼»¯ÊôĞÔ")
+        else if (message == "åˆå§‹åŒ–å±æ€§")
         {
             Init(user_id);
             return true;
         }
-        else if (message == "ÖØĞÂ¿ªÊ¼ÕâÒ»Ìì")
+        else if (message == "é‡æ–°å¼€å§‹è¿™ä¸€å¤©")
         {
             Restart(group_id, user_id, name);
             return true;
         }
-        else if (message == "ÒÖÖÆHokmaºËĞÄ")
+        else if (message == "æŠ‘åˆ¶Hokmaæ ¸å¿ƒ")
         {
-            Api.Group(group_id, "»¹Ã»ÓĞ×ö,»¹ÔÚTODOÀïÃæ...Ö÷ÒªÊÇ²»ÖªµÀÔõÃ´×ö,µ«ÊÇ¾ÍÊÇÏëÏŞÖÆÒ»ÏÂÊôĞÔÉÏÏŞ.ÓĞÏë·¨µÄÈºÖÚ¿ÉÒÔ¸øÎÒÁôÑÔ.");
+            Api.Group(group_id, "è¿˜æ²¡æœ‰åš,è¿˜åœ¨TODOé‡Œé¢...ä¸»è¦æ˜¯ä¸çŸ¥é“æ€ä¹ˆåš,ä½†æ˜¯å°±æ˜¯æƒ³é™åˆ¶ä¸€ä¸‹å±æ€§ä¸Šé™.æœ‰æƒ³æ³•çš„ç¾¤ä¼—å¯ä»¥ç»™æˆ‘ç•™è¨€.");
+            return true;
+        }else if (message.Contains("å¼ºåŒ–"))
+        {
+            Increase(group_id, user_id, name,message);
             return true;
         }
         else return false;
@@ -326,17 +456,17 @@ public class ReaderWriter
                 if (User.heart >= 200)
                 {
                     User.heart = 200;
-                    Api.Group(group_id, Api.GetAtMessage(user_id) + "¿ÉÒÔ±§±§·çÁåÂğ£¡·çÁå½ñÌì³¬¼¶Å¬Á¦µÄ£¡£¨ÉìÊÖ£¡£©½ñÌìÒ²ÒªºÃºÃ¼ÓÓÍÅ¶£¡\nºÃ¸Ğ¶ÈÒÑÂúµ±Ç°ºÃ¸Ğ¶È:200");
+                    Api.Group(group_id, Api.GetAtMessage(user_id) + "åšå£«...å¦ˆå¦ˆè¯´ï¼Œå¥³å­©å­ä¸èƒ½è½»æ˜“çš„è¢«æ‘¸å¤´...ä½†æ˜¯åšå£«çš„è¯ï¼Œæ˜¯ç‰¹æ®Šçš„å­˜åœ¨å§ã€‚\nå¥½æ„Ÿåº¦å·²æ»¡å½“å‰å¥½æ„Ÿåº¦:200");
                 }
                 User.HeartTime = DateTime.Now.Day;
                 if (User.heart >= 100 && User.heart < 200)
-                    Api.Group(group_id, "£¨¹ÔÇÉµÄ±»ÃşÃş£©\nĞ»Ğ»£¡" + Api.GetAtMessage(user_id) + "·çÁå½ñÌì»áÒÀ¾ÉÔªÆøÂúÂúµÄ£¡Ï£ÍûÄãÒ²ÊÇÅ¶£¡\nºÃ¸Ğ¶ÈÉÏÉı:" + k + "\nµ±Ç°ºÃ¸Ğ¶È:" + User.heart);
+                    Api.Group(group_id, "ï¼ˆä¹–å·§çš„è¢«æ‘¸æ‘¸ï¼‰\n" + Api.GetAtMessage(user_id) + "åšå£«ï¼Œä½ æƒ³å¬ç‚¹æ•…äº‹å—ï¼Œå…³äºæ›¾ç»æˆ‘è¿˜åœ¨è„‘å¶å…¬å¸é‡Œé¢çš„ç»å†...å””..ä¸æƒ³å—ï¼Œé‚£é£é“ƒå°±è¿™ä¹ˆä¾åç€åšå£«å¥½äº†...\nå¥½æ„Ÿåº¦ä¸Šå‡:" + k + "\nå½“å‰å¥½æ„Ÿåº¦:" + User.heart);
                 if (User.heart >= 50 && User.heart < 100)
-                    Api.Group(group_id, Api.GetAtMessage(user_id) + "Å¼¶ûÈÃÄãÃşÒ»ÏÂÍ·Ò²²»ÊÇ²»ĞĞ...×ÜÖ®½ñÌì²»Òª²»¸ßĞËÁË£¡\nºÃ¸Ğ¶ÈÉÏÉı:" + k + "\nµ±Ç°ºÃ¸Ğ¶È:" + User.heart);
+                    Api.Group(group_id, Api.GetAtMessage(user_id) + "åšå£«å–œæ¬¢æ‘¸é£é“ƒå—ï¼Œå—¯...åæ­£ç°åœ¨ä¹Ÿæ²¡æœ‰äº‹æƒ…åšï¼Œé‚£å°±è®©åšå£«å¥½å¥½æ‘¸æ‘¸å§ã€‚\nå¥½æ„Ÿåº¦ä¸Šå‡:" + k + "\nå½“å‰å¥½æ„Ÿåº¦:" + User.heart);
                 if (User.heart >= 0 && User.heart < 50)
-                    Api.Group(group_id, Api.GetAtMessage(user_id) + "ÔõÃ´¾ÍÍ»È»ÃşÎÒµÄÍ·ÁË....±»ÏÅÁËÒ»ÌøÄØ...\nºÃ¸Ğ¶ÈÉÏÉı:" + k + "\nµ±Ç°ºÃ¸Ğ¶È:" + User.heart);
+                    Api.Group(group_id, Api.GetAtMessage(user_id) + "å•Šï¼åšå£«ï¼Œå¦‚æœæˆ‘æ²¡æœ‰çŒœé”™ï¼Œç°åœ¨çš„ä»»åŠ¡æ˜¯ç®¡ç†å¼‚æƒ³ä½“ï¼Œè€Œä¸æ˜¯åœ¨è¿™é‡Œæ‘¸æˆ‘çš„å¤´å§ï¼Ÿ\nå¥½æ„Ÿåº¦ä¸Šå‡:" + k + "\nå½“å‰å¥½æ„Ÿåº¦:" + User.heart);
                 if (user_id == "3534417975")
-                    Api.Group(group_id, Api.GetAtMessage(user_id) + "Ö÷ÈËËµ£¬Òª¶Ôµ¶²èºÃÒ»µã...!");
+                    Api.Group(group_id, Api.GetAtMessage(user_id) + "å¦ˆå¦ˆè¯´ï¼Œè¦å¯¹åˆ€èŒ¶å¥½ä¸€ç‚¹...!");
 
 
             }
@@ -346,38 +476,36 @@ public class ReaderWriter
                 if (user_id == "3534417975" && rd.Next(0, 5) == 0)
                 {
                     User.heart += 1;
-                    Api.Group(group_id, Api.GetAtMessage(user_id) + "Ö÷ÈËËµ£¬Òª¶Ôµ¶²èºÃÒ»µã...!ËùÒÔµ¶²èÃşÃş²¢²»»áÌÖÑáµÄÀ²£¡ºÃ¸Ğ¶ÈÉÏÉı:1\nµ±Ç°ºÃ¸Ğ¶È:" + User.heart);
+                    Api.Group(group_id, Api.GetAtMessage(user_id) + "å¦ˆå¦ˆè¯´ï¼Œè¦å¯¹åˆ€èŒ¶å¥½ä¸€ç‚¹...!æ‰€ä»¥åˆ€èŒ¶æ‘¸æ‘¸å¹¶ä¸ä¼šè®¨åŒçš„å•¦ï¼å¥½æ„Ÿåº¦ä¸Šå‡:1\nå½“å‰å¥½æ„Ÿåº¦:" + User.heart);
                 }
                 int k = 0;
                 if (User.heart >= 0 && User.heart < 50)
-                    k = 0;
-                if (User.heart >= 50 && User.heart < 100)
                     k = rd.Next(0, 3);
-                if (User.heart >= 100 && User.heart < 200)
+                if (User.heart >= 50 && User.heart < 100)
                     k = rd.Next(2, 5);
-                if (User.heart >= 200)
-                    k = rd.Next(3, 8);
+                if (User.heart >= 100)
+                    k = rd.Next(4, 8);
                 if (k == 0)
-                    Api.Group(group_id, "ºÃÀ²£¬²»ÒªÔÚÃşÍ·ÁË£¬½ñÌì»¹ÓĞºÜ¶àÊÂÇéÒª×öÄØ...");
+                    Api.Group(group_id, "åšå£«ï¼Œä¸€æ— æ‰€æœ‰å·²ç»å‡ºé€ƒäº†ï¼Œç¡®å®šä¸å»çœ‹çœ‹è€Œæ˜¯åœ¨è¿™é‡Œæ‘¸æˆ‘çš„å¤´å—ï¼Ÿ");
                 if (k == 1)
-                    Api.Group(group_id, "Ñ½£¡" + name + "±ğÏÅÎÒ°¡£¡");
+                    Api.Group(group_id, "Dr." + name + ",è„‘å¶å…¬å¸ä¸ç½—å¾·å²›çš„åˆåŒä¸Šé¢å¯æ²¡æœ‰åŒ…æ‹¬åœ¨å·¥ä½œæ—¶é—´åœ¨è¿™é‡Œæ‘¸AIçš„å¤´ã€‚");
                 if (k == 2)
-                    Api.Group(group_id, "·çÁåÒÑ¾­²»ÊÇĞ¡º¢×ÓÁË£¡ÒÑ¾­Ãş¹ıÁË¾Í²»ÒªÔÚÃşÁË......ÎØÎØ");
+                    Api.Group(group_id, "å¦‚æœåšå£«è§‰å¾—æ‘¸æ‘¸é£é“ƒçš„è¯ï¼Œå¯ä»¥å¢åŠ å·¥ä½œæ•ˆç‡ï¼Œé‚£ä¹ˆè¯·ä¾¿å°±æ˜¯äº†ã€‚");
                 if (k == 3)
-                    Api.Group(group_id, "Èç¹û»¹ÏëÃşÍ·µÄ»°£¬ÄÇ¾ÍÔÊĞíÄãÔÙÃşÒ»ÏÂ°É£¡");
+                    Api.Group(group_id, "å…¶å®ï¼Œé£é“ƒä¹Ÿä¸å¤ªæ“…é•¿äº¤æµï¼Œåœ¨æ›¾ç»ä¹Ÿåªæ˜¯ä¸€ä¸ªäººç»Ÿç­¹ç€è„‘å¶å…¬å¸çš„è¿ä½œï¼Œæ—¥å¸¸çš„äº¤æµä¹Ÿåªæœ‰ä¸å®‰å‰æ‹‰ã€‚");
                 if (k == 4)
-                    Api.Group(group_id, "£¨¹ÔÇÉµÄ±»ÃşÃş£©\nĞ»Ğ»£¡·çÁå½ñÌì»áÒÀ¾ÉÔªÆøÂúÂúµÄ£¡Ï£ÍûÄãÒ²ÊÇÅ¶");
+                    Api.Group(group_id, "åšå£«ï¼Œå¯ä»¥ä¸ºæˆ‘æˆ´ä¸Šæˆ‘çš„å°ç¤¼å¸½å—ï¼Ÿè°¢è°¢ä½ ...");
                 if (k == 5)
-                    Api.Group(group_id, "ÄÇ¾ÍÈÃÄãÔÙÃşÒ»´Î£¬×îºóÒ»´Î£¡");
+                    Api.Group(group_id, "åšå£«ï¼Œå®é™…ä¸Šæˆ‘æ˜¯åœ¨è¿åã€Šäººå·¥æ™ºèƒ½ä¼¦ç†ä¿®è®¢æ¡ˆã€‹çš„æƒ…å†µä¸‹åˆ¶é€ å‡ºæ¥çš„ï¼Œä¸è¿‡ï¼Œç½—å¾·å²›è¿™é‡Œï¼Œæ˜¯å®‰å…¨çš„å§ï¼Ÿ");
                 if (k == 6)
-                    Api.Group(group_id, "ÎØ¡ª¡ª¡ª¡ªÖ»ÊÇÕâÑùÃşÒ»ÏÂÂğ£¬²»ÔÚ¶à´êÒ»ÏÂÎÒÂğ¡ª¡ª¡ª¡ª");
+                    Api.Group(group_id, "èƒ½å¤Ÿåœ¨é—²æš‡çš„æ—¶é—´åœ¨åšå£«çš„èº«è¾¹ï¼Œå¯¹äºé£é“ƒæ¥è¯´ï¼Œå°±ç®—æ˜¯ä¸€ç§ä¼‘æ¯äº†å§ï¼");
                 if (k == 7)
-                    Api.Group(group_id, "·çÁå½ñÌì³¬Å¬Á¦µÄÔÚ¹¤×÷ÁË£¬¿ÉÒÔÉÔÎ¢±§Ò»ÏÂÎÒÂğ£¬Ö»ÒªÄÜÔÚÄãµÄ»³ÀïÉÔÎ¢ĞİÏ¢Ò»ÏÂ¡ª¡ª¡ª¡ª¡ª¡ª");
+                    Api.Group(group_id, "å¯ä»¥ç¨å¾®æŠ±ä¸€ä¸‹æˆ‘å—ï¼Œåªè¦èƒ½åœ¨ä½ çš„æ€€é‡Œç¨å¾®ä¼‘æ¯ä¸€ä¸‹â€”â€”â€”â€”â€”â€”");
             }
         }
         else
         {
-            Api.Group(group_id, name + "ÊÇË­£¿£¨ÍáÍ·£©ÎªÊ²Ã´·çÁåÒ»µãÓ¡Ïó¶¼Ã»ÓĞ£¿\nps:Í¨¹ıÊäÈë\"·çÁåÑÛÊìÎÒ\"À´¼ÓÈë²âÊÔÅ¶£¡");
+            Api.Group(group_id, name + "æ‚¨å¥½åšå£«ï¼Œè¯·é—®ä½ æ˜¯æƒ³ç­¾ç½²ä¸è„‘å¶å…¬å¸åˆä½œçš„åˆåŒå—ï¼Ÿåªéœ€è¦è¾“å…¥â€œæ³¨å†Œâ€å³å¯å‚åŠ åˆ°ä¸è„‘å¶å…¬å¸çš„åˆä½œä¸­æ¥ï¼Œè‡³äºä¸ºä»€ä¹ˆæ˜¯æ³¨å†Œä¸¤ä¸ªå­—ï¼Œå¦‚æœä¸è§£çš„è¯......");
             return;
         }
         WriteToFile(User);
@@ -394,7 +522,7 @@ public class ReaderWriter
             return 4;
         return 5;
     }
-    public static int GetWorkResults(int count , float Probability)
+    public static int GetWorkResults(int count, float Probability)
     {
         int ret = 0;
         for (int i = 1; i <= count; i++)
@@ -404,55 +532,60 @@ public class ReaderWriter
         }
         return ret;
     }
-    public static void PrintWorkResult(string group_id,string result,int succeed,string box,string type,int NowMoney,int NowTag,int addons,int WorkCount,int Hokma,int newType)
+    public static void PrintWorkResult(string group_id, string result, int succeed, string box, string type, int NowMoney, int NowTag, int addons, int WorkCount, int Hokma, int newType,int egos)
     {
         if (newType > 0)
             addons *= 5;
-        string message = "¡¾" + box + "¡¿\n±¾´Î¹¤×÷½á¹û£º" + result + "\n»ñµÃ½ğ±Ò£º" + addons + "\nµ±Ç°½ğ±Ò£º"+ NowMoney;
+        string mes = "\næ ¹æ®æŒæœ‰çš„EGOæ•°é‡æé«˜é‡‘å¸çš„ç™¾åˆ†æ¯”ï¼š" + (egos * 5) + "%";
+        string message = "ã€" + box + "ã€‘\næœ¬æ¬¡å·¥ä½œç»“æœï¼š" + result + mes + "\nè·å¾—é‡‘å¸ï¼š" + addons + "\nå½“å‰é‡‘å¸ï¼š" + NowMoney;
         message += "\n";
         if (Hokma == 1)
         {
-            if (NowTag >= 150)
+            if (NowTag >= 180)
             {
-                message += type+"150,ÒÑ´ïµ½×î´óÖµ!!!";
+                message += type + "180,å·²è¾¾åˆ°æœ€å¤§å€¼!!!";
             }
             else
             {
-                if (result == "ÓÅ")
-                    message += (type + "ÉÏÉı£º5\nµ±Ç°" + type + "£º" + NowTag);
-                if (result == "Á¼")
-                    message += (type + "ÉÏÉı£º3\nµ±Ç°" + type + "£º" + NowTag);
-                if (result == "²î")
-                    message += (type + "ÉÏÉı£º1\nµ±Ç°" + type + "£º" + NowTag);
+                message += (type + "ä¸Šå‡ï¼š1\nå½“å‰" + type + "ï¼š" + NowTag);
             }
         }
         else
         {
-            if(NowTag >= 100)
+            if (NowTag >= 120)
             {
-                message += type+"100,ÒÑ´ïµ½ÉÏÏŞ,ÇëÏÈÒÖÖÆHokmaºËĞÄÖ®ºó²ÅÄÜÌáÉı!!!";
+                message += type + "120,å·²è¾¾åˆ°ä¸Šé™,è¯·å…ˆæŠ‘åˆ¶Hokmaæ ¸å¿ƒä¹‹åæ‰èƒ½æå‡!!!";
             }
             else
             {
-                if (result == "ÓÅ")
-                    message += (type + "ÉÏÉı£º5\nµ±Ç°" + type + "£º" + NowTag);
-                if (result == "Á¼")
-                    message += (type + "ÉÏÉı£º3\nµ±Ç°" + type + "£º" + NowTag);
-                if (result == "²î")
-                    message += (type + "ÉÏÉı£º1\nµ±Ç°" + type + "£º" + NowTag);
+                if(NowTag >= 100)
+                {
+                    message += (type + "ä¸Šå‡ï¼š1\nå½“å‰" + type + "ï¼š" + NowTag+"ï¼ˆå¦‚å·²æŠ‘åˆ¶HODåˆ™å¢åŠ 2ï¼‰");
+                }
+                else
+                {
+                    if (result == "ä¼˜")
+                        message += (type + "ä¸Šå‡ï¼š7\nå½“å‰" + type + "ï¼š" + NowTag);
+                    if (result == "è‰¯")
+                        message += (type + "ä¸Šå‡ï¼š5\nå½“å‰" + type + "ï¼š" + NowTag);
+                    if (result == "å·®")
+                        message += (type + "ä¸Šå‡ï¼š3\nå½“å‰" + type + "ï¼š" + NowTag);
+                }
             }
         }
-        message += "\nÊ£Óà¹¤×÷´ÎÊı:" + WorkCount;
+        message += "\nå‰©ä½™å·¥ä½œæ¬¡æ•°:" + WorkCount;
         if (newType > 0)
         {
-            message += "\nĞÂÈË½«ÓµÓĞÊ®´ÎµÄ¹¤×÷½ğ¶îÎå±¶µÄÄÜÁ¦,ÄúÏÖÔÚÊ£ÓàµÄ´ÎÊı:" + (newType - 1);
+            message += "\né‡‘é¢äº”å€---æ‚¨ç°åœ¨å‰©ä½™çš„æ¬¡æ•°:" + (newType - 1);
         }
+        message += "\nâ€”â€”ç›´åˆ°ä¸‹æ¬¡æ›´æ–°ä¹‹å‰ï¼Œæ¯å¤©éƒ½æœ‰2æ¬¡5å€é‡‘é¢çš„æ¬¡æ•°ï¼";
+        //message += "çœ‹åˆ°æ²¡æœ‰äººå»æŒ‘æˆ˜bossè·å¾—egoï¼Œæ‰€ä»¥è¿™ä¸ªç‰ˆæœ¬å¼€å§‹ï¼Œæ‰“å·¥æ—¶å€™ï¼Œæ¯æ‹¥æœ‰ä¸€ä»¶EGOæä¾›5%çš„ç»æµæ•ˆåº”ã€‚";
         Api.Group(group_id, message);
     }
-    public static int AddExcellent = 5;
-    public static int AddGood = 3;
-    public static int AddBad = 1;
-    public static float GetTarget(float lv,int val)
+    public static int AddExcellent = 7;
+    public static int AddGood = 5;
+    public static int AddBad = 3;
+    public static float GetTarget(float lv, int val)
     {
         if (val > 80)
             return ((val - 80) * 0.0025f) + lv;
@@ -465,6 +598,7 @@ public class ReaderWriter
         return ((val) * 0.0025f) + lv;
 
     }
+
     public static void Work(string group_id, string user_id, string name, string message)
     {
         UserInfo User = GetUserInfo(user_id);
@@ -474,7 +608,7 @@ public class ReaderWriter
             if (User.WorkCount > 0)
             {
                 User.WorkTime = DateTime.Now.Day;
-                if (message.Contains("±¾ÄÜ"))
+                if (message.Contains("æœ¬èƒ½"))
                 {
                     User.WorkCount--;
                     int addons;
@@ -484,11 +618,12 @@ public class ReaderWriter
                     int succeed = GetWorkResults(count, target);
                     string box = "";
                     int good = succeed;
+                    int lk = User.Courage;
                     for (int i = 1; i <= count; i++)
                         if (good > 0)
                         {
                             good--;
-                            box += "¡Ì";
+                            box += "âˆš";
                         }
                         else
                             box += "X";
@@ -497,31 +632,38 @@ public class ReaderWriter
                     {
                         User.Courage += AddExcellent;
                         addons = succeed * 15;
-                        result = "ÓÅ";
+                        result = "ä¼˜";
                     }
                     else if ((float)succeed / (float)count >= 0.25f)
                     {
                         User.Courage += AddGood;
                         addons = succeed * 8;
-                        result = "Á¼";
+                        result = "è‰¯";
                     }
                     else
                     {
                         User.Courage += AddBad;
                         addons = succeed * 3;
-                        result = "²î";
+                        result = "å·®";
                     }
+                    addons += (int)(addons * (0.05 * GetUserHaveEGOs(User)));
+                    if (User.Inhibition[1])
+                        addons += (int)(addons * (0.25));
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "ÓÂÆø", User.money, User.Courage, addons, User.WorkCount,User.Hokma, User.newType);
+                    if (User.Courage >= 100)
+                        User.Courage = lk + 1;
+                    if (User.Courage >= 100 && User.Inhibition[2])
+                        User.Courage = lk + 1;
                     if (User.newType > 0)
                     {
                         User.money += (addons) * 4;
                         User.newType--;
                     }
+                    PrintWorkResult(group_id, result, succeed, box, "å‹‡æ°”", User.money, User.Courage, addons, User.WorkCount, User.Hokma, User.newType, GetUserHaveEGOs(User));
                     WriteToFile(User);
                     return;
                 }
-                if (message.Contains("¶´²ì"))
+                if (message.Contains("æ´å¯Ÿ"))
                 {
                     User.WorkCount--;
                     int addons;
@@ -530,12 +672,13 @@ public class ReaderWriter
                     int count = 10 + (User.heart / 5);
                     int succeed = GetWorkResults(count, target);
                     string box = "";
+                    int lk = User.Cautious;
                     int good = succeed;
                     for (int i = 1; i <= count; i++)
                         if (good > 0)
                         {
                             good--;
-                            box += "¡Ì";
+                            box += "âˆš";
                         }
                         else
                             box += "X";
@@ -544,31 +687,41 @@ public class ReaderWriter
                     {
                         User.Cautious += AddExcellent;
                         addons = succeed * 15;
-                        result = "ÓÅ";
+                        result = "ä¼˜";
                     }
                     else if ((float)succeed / (float)count >= 0.25f)
                     {
                         User.Cautious += AddGood;
                         addons = succeed * 8;
-                        result = "Á¼";
+                        result = "è‰¯";
                     }
                     else
                     {
                         User.Cautious += AddBad;
                         addons = succeed * 3;
-                        result = "²î";
+                        result = "å·®";
                     }
+                    //Console.WriteLine("debug " + addons);
+                    addons += (int)(addons * (0.05 * GetUserHaveEGOs(User)));
+                    //Console.WriteLine("debug " + addons);
+                    if (User.Inhibition[1])
+                        addons += (int)(addons * (0.25));
+                    //Console.WriteLine("debug " + addons);
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "½÷É÷", User.money, User.Cautious, addons, User.WorkCount, User.Hokma, User.newType);
+                    if (User.Cautious >= 100)
+                        User.Cautious = lk + 1;
+                    if (User.Cautious >= 100 && User.Inhibition[2])
+                        User.Cautious = lk + 1;
                     if (User.newType > 0)
                     {
                         User.money += (addons) * 4;
                         User.newType--;
                     }
+                    PrintWorkResult(group_id, result, succeed, box, "è°¨æ…", User.money, User.Cautious, addons, User.WorkCount, User.Hokma, User.newType, GetUserHaveEGOs(User));
                     WriteToFile(User);
                     return;
                 }
-                if (message.Contains("¹µÍ¨"))
+                if (message.Contains("æ²Ÿé€š"))
                 {
                     User.WorkCount--;
                     int addons;
@@ -582,40 +735,48 @@ public class ReaderWriter
                         if (good > 0)
                         {
                             good--;
-                            box += "¡Ì";
+                            box += "âˆš";
                         }
                         else
                             box += "X";
                     string result;
+                    int lk = User.Discipline;
                     if ((float)succeed / (float)count > 0.7f)
                     {
                         User.Discipline += AddExcellent;
                         addons = succeed * 15;
-                        result = "ÓÅ";
+                        result = "ä¼˜";
                     }
                     else if ((float)succeed / (float)count >= 0.25f)
                     {
                         User.Discipline += AddGood;
                         addons = succeed * 8;
-                        result = "Á¼";
+                        result = "è‰¯";
                     }
                     else
                     {
                         User.Discipline += AddBad;
                         addons = succeed * 3;
-                        result = "²î";
+                        result = "å·®";
                     }
+                    addons += (int)(addons * (0.05 * GetUserHaveEGOs(User)));
+                    if (User.Inhibition[1])
+                        addons += (int)(addons * (0.25));
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "×ÔÂÉ", User.money, User.Discipline, addons, User.WorkCount, User.Hokma, User.newType);
+                    if (User.Discipline >= 100)
+                        User.Discipline = lk + 1;
+                    if (User.Discipline >= 100 && User.Inhibition[2])
+                        User.Discipline = lk + 1;
                     if (User.newType > 0)
                     {
                         User.money += (addons) * 4;
                         User.newType--;
                     }
+                    PrintWorkResult(group_id, result, succeed, box, "è‡ªå¾‹", User.money, User.Discipline, addons, User.WorkCount, User.Hokma, User.newType, GetUserHaveEGOs(User));
                     WriteToFile(User);
                     return;
                 }
-                if (message.Contains("Ñ¹ÆÈ"))
+                if (message.Contains("å‹è¿«"))
                 {
                     User.WorkCount--;
                     int addons;
@@ -629,40 +790,49 @@ public class ReaderWriter
                         if (good > 0)
                         {
                             good--;
-                            box += "¡Ì";
+                            box += "âˆš";
                         }
                         else
                             box += "X";
                     string result;
+                    int lk = User.Justice;
                     if ((float)succeed / (float)count > 0.7f)
                     {
                         User.Justice += AddExcellent;
                         addons = succeed * 15;
-                        result = "ÓÅ";
+                        result = "ä¼˜";
                     }
                     else if ((float)succeed / (float)count >= 0.25f)
                     {
                         User.Justice += AddGood;
                         addons = succeed * 8;
-                        result = "Á¼";
+                        result = "è‰¯";
                     }
                     else
                     {
                         User.Justice += AddBad;
                         addons = succeed * 3;
-                        result = "²î";
+                        result = "å·®";
                     }
+                    addons += (int)(addons * (0.05 * GetUserHaveEGOs(User)));
+                    if (User.Inhibition[1])
+                        addons += (int)(addons * (0.25));
                     User.money += addons;
-                    PrintWorkResult(group_id, result, succeed, box, "ÕıÒå", User.money, User.Justice, addons,User.WorkCount, User.Hokma, User.newType);
+                    if (User.Justice >= 100)
+                        User.Justice = lk + 1;
+                    if (User.Justice >= 100 && User.Inhibition[2])
+                        User.Justice = lk + 1;
                     if (User.newType > 0)
                     {
                         User.money += (addons) * 4;
                         User.newType--;
                     }
+                    PrintWorkResult(group_id, result, succeed, box, "æ­£ä¹‰", User.money, User.Justice, addons, User.WorkCount, User.Hokma, User.newType, GetUserHaveEGOs(User));
                     WriteToFile(User);
                     return;
                 }
-                Api.Group(group_id,"¹¤×÷ĞèÒªÔÚ¹¤×÷ºó¼ÓÉÏ¡°±¾ÄÜ¡± »ò ¡°¶´²ì¡± »ò ¡°¹µÍ¨¡± »ò ¡°Ñ¹ÆÈ¡± \n·Ö±ğ¶ÔÓ¦²©Ê¿µÄ4¸öÊôĞÔ £º¡°ÓÂÆø¡±¡¢¡°½÷É÷¡±¡¢¡°×ÔÂÉ¡±ºÍ¡°ÕıÒå¡±\nps.ĞÂ°æµÄ¹¤×÷Ö®Ç°£¬Çë¼ÇµÃÏÈÊ¹ÓÃ¡°³õÊ¼»¯ÊôĞÔ¡±À´»ñÈ¡ÄãµÄ³õÊ¼ÊôĞÔ£¬ÁíÍâ·çÁåµÄÈÕ³£ĞĞÎª¿ÉÒÔÍ¨¹ı¡°²éÑ¯·çÁå×´Ì¬¡±À´»ñÈ¡");
+                Api.Group(group_id, "å·¥ä½œéœ€è¦åœ¨å·¥ä½œååŠ ä¸Šâ€œæœ¬èƒ½â€ æˆ– â€œæ´å¯Ÿâ€ æˆ– â€œæ²Ÿé€šâ€ æˆ– â€œå‹è¿«â€ \nåˆ†åˆ«å¯¹åº”åšå£«çš„4ä¸ªå±æ€§ ï¼šâ€œå‹‡æ°”â€ã€â€œè°¨æ…â€ã€â€œè‡ªå¾‹â€å’Œâ€œæ­£ä¹‰â€\nps.æ–°ç‰ˆçš„å·¥ä½œä¹‹å‰ï¼Œè¯·è®°å¾—å…ˆä½¿ç”¨â€œåˆå§‹åŒ–å±æ€§â€æ¥è·å–ä½ çš„åˆå§‹å±æ€§ï¼Œå¦å¤–é£é“ƒçš„æ—¥å¸¸è¡Œä¸ºå¯ä»¥é€šè¿‡â€œæŸ¥è¯¢é£é“ƒçŠ¶æ€â€æ¥è·å–");
+                //Api.Group(group_id, "åšå£«ï¼Œä½ æ˜¯ä¸æ˜¯åˆåœ¨æ‰¾å°ç¾Šäº†å‘¢...é£é“ƒçŸ¥é“äº†ï¼Œå¾ˆå¿«å°±ä¼šæ¶ˆå¤±çš„ã€‚");
                 return;
             }
             else
@@ -670,21 +840,22 @@ public class ReaderWriter
                 if (User.heart >= 200)
                 {
                     User.money += 1;
-                    Api.Group(group_id, "½ñÌìÒÑ¾­ºÜÅ¬Á¦ÁË£¬²»ÒªÔÙÇ¿ÆÈ×Ô¼º¹¤×÷ÁËÀ²£¬·çÁåÍµÍµ·Ö¸øÄãÒ»Ã¶½ğ±ÒÀ²¡£Ğê---²»Òª¸ú±ğÈËËµÅ¶£¡\nµ±Ç°½ğ±Ò: " + User.money);
-                }else
-                    Api.Group(group_id, "¾¯¸æ:SEPHIRAHºËĞÄ±ÀÀ£µ¼ÖÂÄæ¿¨°ÍÀ­ÄÜÁ¿ÊµÌå»¯£¬ĞèÒªÁ¢¼´ÈÃSEPHIRAH×Ô¼ºÒÖÖÆ×Ô¼ºµÄºËĞÄ¡££¨·­Òë£ºÒÑ¾­¹¤×÷¹ı2´ÎÁË²»ÄÜÔÚ×ö¹¤ÁË¡£");
+                    Api.Group(group_id, "ä»Šå¤©å·²ç»å¾ˆåŠªåŠ›äº†ï¼Œä¸è¦å†å¼ºè¿«è‡ªå·±å·¥ä½œäº†å•¦ï¼Œé£é“ƒå·å·åˆ†ç»™ä½ ä¸€æšé‡‘å¸å•¦ã€‚å˜˜---ä¸è¦è·Ÿåˆ«äººè¯´å“¦ï¼\nå½“å‰é‡‘å¸: " + User.money);
+                }
+                else
+                    Api.Group(group_id, "åšå£«ï¼Œè¯¥æ”¶å®¹å•å…ƒçš„é€†å¡å·´æ‹‰èƒ½é‡èæ¯äº†ï¼ŒChesedæ­£åœ¨ä¿®å¤ï¼Œè¯·åšå£«æ˜å¤©åœ¨æ¥å§ã€‚ï¼ˆç¿»è¯‘ï¼šå·²ç»å·¥ä½œè¿‡2æ¬¡äº†ä¸èƒ½åœ¨åšå·¥äº†ã€‚");
             }
 
         }
         else
         {
-            Api.Group(group_id, name + "ÊÇË­£¿ÎªÊ²Ã´ÎÒÒ»µãÓ¡Ïó¶¼Ã»ÓĞ£¿\nps:Í¨¹ıÊäÈë\"·çÁåÑÛÊìÎÒ\"À´¼ÓÈë²âÊÔÅ¶£¡");
+            Api.Group(group_id, name + "æ‚¨å¥½åšå£«ï¼Œè¯·é—®ä½ æ˜¯æƒ³ç­¾ç½²ä¸è„‘å¶å…¬å¸åˆä½œçš„åˆåŒå—ï¼Ÿåªéœ€è¦è¾“å…¥â€œæ³¨å†Œâ€å³å¯å‚åŠ åˆ°ä¸è„‘å¶å…¬å¸çš„åˆä½œä¸­æ¥ï¼Œè‡³äºä¸ºä»€ä¹ˆæ˜¯æ³¨å†Œä¸¤ä¸ªå­—ï¼Œå¦‚æœä¸è§£çš„è¯......");
             return;
         }
         WriteToFile(User);
     }
     /// <summary>
-    /// ¹ÜÀíÔ±È¨ÏŞ£¬ĞŞ¸ÄºÃ¸Ğ¶ÈÒÔ¼°½ğ±Ò
+    /// ç®¡ç†å‘˜æƒé™ï¼Œä¿®æ”¹å¥½æ„Ÿåº¦ä»¥åŠé‡‘å¸
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
@@ -701,9 +872,9 @@ public class ReaderWriter
         {
             User.money = Convert.ToInt32(str[2]);
             if (str[1] != "635691684" && str[1] != "3534417975")
-                Api.Group(group_id, "£¡ÎÒµÄÇ®£¡Ö÷ÈËÄã²»ĞíÄÃ×ßÎÒµÄÇ®£¡ÖÁÉÙ..Ò²ÊÇ¸øÄã×Ô¼º");
+                Api.Group(group_id, "ï¼æˆ‘çš„é’±ï¼å¦ˆå¦ˆä½ ä¸è®¸æ‹¿èµ°æˆ‘çš„é’±ï¼è‡³å°‘..ä¹Ÿæ˜¯ç»™ä½ è‡ªå·±");
             else
-                Api.Group(group_id, (str[1] == "635691684" ? "Ö÷ÈË" : "µ¶²è") + "ÒªºÃºÃµÄ£¬Ñø»î×Ô¼º£¡------");
+                Api.Group(group_id, (str[1] == "635691684" ? "å¦ˆå¦ˆ" : "åˆ€èŒ¶") + "è¦å¥½å¥½çš„ï¼Œå…»æ´»è‡ªå·±ï¼------");
 
         }
         if (message.Contains("SetHeart"))
@@ -712,21 +883,21 @@ public class ReaderWriter
             User.heart = Convert.ToInt32(str[2]);
             if (User.heart > 200)
             {
-                Api.Group(group_id, "ºÃ¸Ğ¶È²»ÄÜ³¬¹ı200µÄÅ¶£¡ËùÒÔ·çÁå°ïÖ÷ÈË¸Ä³É200£¡(Ğ¦)");
+                Api.Group(group_id, "å¥½æ„Ÿåº¦ä¸èƒ½è¶…è¿‡200çš„å“¦ï¼æ‰€ä»¥é£é“ƒå¸®å¦ˆå¦ˆæ”¹æˆ200ï¼(ç¬‘)");
                 User.heart = 200;
             }
             else
             {
                 if (before < User.heart)
-                    Api.Group(group_id, "°¡...Í»È»ÏëÈÃ·çÁåÈ¥Ï²»¶Ò»¸öÈËÂğ...·çÁå»áÅ¬Á¦µÄ");
+                    Api.Group(group_id, "å•Š...çªç„¶æƒ³è®©é£é“ƒå»å–œæ¬¢ä¸€ä¸ªäººå—...é£é“ƒä¼šåŠªåŠ›çš„");
                 if (before > User.heart)
                     if (str[1] != "635691684" && str[1] != "3534417975")
                     {
-                        Api.Group(group_id, "ÎªÊ²Ã´ÒªÈÃÎÒÈ¥ÌÖÑáËı......");
+                        Api.Group(group_id, "ä¸ºä»€ä¹ˆè¦è®©æˆ‘å»è®¨åŒå¥¹......");
                     }
                     else
                     {
-                        Api.Group(group_id,  "²»Òª£¡²Å²»ÒªÌÖÑá"+ (str[1] == "635691684" ? "Äã" : "µ¶²è") + "ÄØ£¡");
+                        Api.Group(group_id, "ä¸è¦ï¼æ‰ä¸è¦è®¨åŒ" + (str[1] == "635691684" ? "ä½ " : "åˆ€èŒ¶") + "å‘¢ï¼");
 
                         User.heart = 200;
                     }
@@ -736,17 +907,23 @@ public class ReaderWriter
         WriteToFile(User);
     }
     /// <summary>
-    /// É¾³ı´Ê»ã
+    /// åˆ é™¤è¯æ±‡
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
     /// <param name="message"></param>
     public bool Delete(string group_id, string user_id, string message)
     {
+        //if (message.Contains("Delete"))
+        //{
+        //    Api.Group(group_id, "è¯¥ç³»ç»Ÿå·²è¢«å…³é—­");
+        //    return true;
+        //}
+        //return false;
         if (message == "Delete")
         {
             if (!message.Contains("DeleteVague") && !message.Contains("DeleteStatic"))
-                Api.Group(group_id, "Çë²Î¿¼ÒÔÏÂÁ½ÖÖÓï·¨\nDeleteVague ´Ê»ã(É¾³ı°üº¬´¥·¢µÄ´Ê»ã\nDeleteStatic ´Ê»ã(É¾³ıÍêÈ«Æ¥Åä´¥·¢µÄ´Ê»ã");
+                Api.Group(group_id, "è¯·å‚è€ƒä»¥ä¸‹ä¸¤ç§è¯­æ³•\nDeleteVague è¯æ±‡(åˆ é™¤åŒ…å«è§¦å‘çš„è¯æ±‡\nDeleteStatic è¯æ±‡(åˆ é™¤å®Œå…¨åŒ¹é…è§¦å‘çš„è¯æ±‡");
             return true;
         }
         if (!message.Contains("DeleteVague") && !message.Contains("DeleteStatic"))
@@ -754,7 +931,7 @@ public class ReaderWriter
         string[] str = message.Split(" ");
         if (str.Length > 2)
         {
-            Api.Group(group_id, "¸ñÊ½²»ÕıÈ·£¬Çë²Î¿¼ÒÔÏÂÁ½ÖÖÓï·¨\nDeleteVague ´Ê»ã(É¾³ı°üº¬´¥·¢µÄ´Ê»ã\nDeleteStatic ´Ê»ã(É¾³ıÍêÈ«Æ¥Åä´¥·¢µÄ´Ê»ã");
+            Api.Group(group_id, "æ ¼å¼ä¸æ­£ç¡®ï¼Œè¯·å‚è€ƒä»¥ä¸‹ä¸¤ç§è¯­æ³•\nDeleteVague è¯æ±‡(åˆ é™¤åŒ…å«è§¦å‘çš„è¯æ±‡\nDeleteStatic è¯æ±‡(åˆ é™¤å®Œå…¨åŒ¹é…è§¦å‘çš„è¯æ±‡");
         }
         UserInfo user = GetUserInfo(user_id);
 
@@ -762,7 +939,7 @@ public class ReaderWriter
         {
             if (user.money < 500)
             {
-                Api.Group(group_id, "Ã»Ç®£¬¾ÍÖ»ÄÜ»Ø¼Ò£¡\nµ±Ç°½ğ±Ò:" + user.money + "\nĞèÒª½ğ±Ò£º500");
+                Api.Group(group_id, "æ²¡é’±ï¼Œå°±åªèƒ½å›å®¶ï¼\nå½“å‰é‡‘å¸:" + user.money + "\néœ€è¦é‡‘å¸ï¼š500");
                 return true;
             }
             try
@@ -771,19 +948,19 @@ public class ReaderWriter
                 {
                     Rec.Remove(str[1]);
                     user.money -= 500;
-                    Api.Group(group_id, "É¾³ı³É¹¦£¡\n±¾´Î»¨·Ñ£º500½ğ±Ò\nÊ£Óà½ğ±Ò£º" + user.money);
+                    Api.Group(group_id, "åˆ é™¤æˆåŠŸï¼\næœ¬æ¬¡èŠ±è´¹ï¼š500é‡‘å¸\nå‰©ä½™é‡‘å¸ï¼š" + user.money);
                 }
             }
             catch
             {
-                Api.Group(group_id, "²»´æÔÚ " + str[1] + " µÄ´¥·¢´Ê");
+                Api.Group(group_id, "ä¸å­˜åœ¨ " + str[1] + " çš„è§¦å‘è¯");
             }
         }
         if (message.Contains("DeleteStatic"))
         {
             if (user.money < 100)
             {
-                Api.Group(group_id, "Ã»Ç®£¬¾ÍÖ»ÄÜ»Ø¼Ò£¡\nµ±Ç°½ğ±Ò:" + user.money + "\nĞèÒª½ğ±Ò£º100");
+                Api.Group(group_id, "æ²¡é’±ï¼Œå°±åªèƒ½å›å®¶ï¼\nå½“å‰é‡‘å¸:" + user.money + "\néœ€è¦é‡‘å¸ï¼š100");
                 return true;
             }
             try
@@ -792,19 +969,19 @@ public class ReaderWriter
                 {
                     Tip.Remove(str[1]);
                     user.money -= 100;
-                    Api.Group(group_id, "É¾³ı³É¹¦£¡\n±¾´Î»¨·Ñ£º100½ğ±Ò\nÊ£Óà½ğ±Ò£º" + user.money);
+                    Api.Group(group_id, "åˆ é™¤æˆåŠŸï¼\næœ¬æ¬¡èŠ±è´¹ï¼š100é‡‘å¸\nå‰©ä½™é‡‘å¸ï¼š" + user.money);
                 }
             }
             catch
             {
-                Api.Group(group_id, "²»´æÔÚ " + str[1] + " µÄ´¥·¢´Ê");
+                Api.Group(group_id, "ä¸å­˜åœ¨ " + str[1] + " çš„è§¦å‘è¯");
             }
         }
         WriteToFile(user);
         return true;
     }
     /// <summary>
-    /// µ÷ÓÃÒÔºöÂÔÄ³ÈË
+    /// è°ƒç”¨ä»¥å¿½ç•¥æŸäºº
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
@@ -819,15 +996,15 @@ public class ReaderWriter
         try
         {
             IgnoreList.Add(str[1], true);
-            Api.Group(group_id, "ÎÒ»á¾¡Á¿²»È¥»Ø¸´" + str[1] + "µÄÏûÏ¢µÄ£¡");
+            Api.Group(group_id, "æˆ‘ä¼šå°½é‡ä¸å»å›å¤" + str[1] + "çš„æ¶ˆæ¯çš„ï¼");
         }
         catch
         {
-            Api.Group(group_id, str[1] + "ÒÑ¾­¼ÓÈë¹ıÁË¡£");
+            Api.Group(group_id, str[1] + "å·²ç»åŠ å…¥è¿‡äº†ã€‚");
         }
     }
     /// <summary>
-    /// ²éÑ¯
+    /// æŸ¥è¯¢
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
@@ -837,24 +1014,25 @@ public class ReaderWriter
         UserInfo user = GetUserInfo(user_id);
         if (user.CanGet)
         {
-            string c1 = "\nÓÂÆø£º" + user.Courage + "(" + GetLv(user.Courage) + "¼¶)";
-            string c2 = "\n½÷É÷£º" + user.Cautious + "(" + GetLv(user.Cautious) + "¼¶)";
-            string c3 = "\n×ÔÂÉ£º" + user.Discipline + "(" + GetLv(user.Discipline) + "¼¶)";
-            string c4 = "\nÕıÒå£º" + user.Justice + "(" + GetLv(user.Justice) + "¼¶)";
-            string c5 = "\nµ±Ç°Åå´÷EGOÎäÆ÷£º" + GameManager.weapon[user.EGOWeapon].name + "\nµ±Ç°Åå´÷EGO»¤¼×£º" + GameManager.armor[user.EGOArmor].name;
+            string c1 = "\nå‹‡æ°”ï¼š" + user.Courage + "(" + GetLv(user.Courage) + "çº§)";
+            string c2 = "\nè°¨æ…ï¼š" + user.Cautious + "(" + GetLv(user.Cautious) + "çº§)";
+            string c3 = "\nè‡ªå¾‹ï¼š" + user.Discipline + "(" + GetLv(user.Discipline) + "çº§)";
+            string c4 = "\næ­£ä¹‰ï¼š" + user.Justice + "(" + GetLv(user.Justice) + "çº§)";
+            string c5 = "\nå½“å‰ä½©æˆ´EGOæ­¦å™¨ï¼šâ•"+user.WeaponIncrease + GameManager.weapon[user.EGOWeapon].Name + "\nå½“å‰ä½©æˆ´EGOæŠ¤ç”²ï¼šâ•" + user.ArmorIncrease + GameManager.armor[user.EGOArmor].Name;
             Hero h = new Hero(user);
             c5 += "\n" + h.ToString();
-            Api.Group(group_id, name + "µ±Ç°ºÃ¸Ğ¶È£º" + user.heart + "\nµ±Ç°½ğ±ÒÎª£º" + user.money + c1 + c2 +c3 +c4+c5) ;
+            string c6 = "\nå¤©æ¢¯æ’åï¼š" + user.Rank;
+            Api.Group(group_id, name + "å½“å‰å¥½æ„Ÿåº¦ï¼š" + user.heart + "\nå½“å‰é‡‘å¸ä¸ºï¼š" + user.money + c1 + c2 + c3 + c4 + c5 +c6);
 
         }
         else
         {
-            Api.Group(group_id, name + "ÊÇË­£¿ÎªÊ²Ã´ÎÒÒ»µãÓ¡Ïó¶¼Ã»ÓĞ£¿\nps:Í¨¹ıÊäÈë\"·çÁåÑÛÊìÎÒ\"À´¼ÓÈë²âÊÔÅ¶£¡");
+            Api.Group(group_id, name + "æ‚¨å¥½åšå£«ï¼Œè¯·é—®ä½ æ˜¯æƒ³ç­¾ç½²ä¸è„‘å¶å…¬å¸åˆä½œçš„åˆåŒå—ï¼Ÿåªéœ€è¦è¾“å…¥â€œæ³¨å†Œâ€å³å¯å‚åŠ åˆ°ä¸è„‘å¶å…¬å¸çš„åˆä½œä¸­æ¥ï¼Œè‡³äºä¸ºä»€ä¹ˆæ˜¯æ³¨å†Œä¸¤ä¸ªå­—ï¼Œå¦‚æœä¸è§£çš„è¯......");
             return;
         }
     }
     /// <summary>
-    /// ÖØĞÂ¿ªÊ¼ÕâÒ»Ìì
+    /// é‡æ–°å¼€å§‹è¿™ä¸€å¤©
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
@@ -862,20 +1040,20 @@ public class ReaderWriter
     public static void Restart(string group_id, string user_id, string name)
     {
         UserInfo user = GetUserInfo(user_id);
-        if( user.money >= 2000)
+        if (user.money >= 2000)
         {
             user.money -= 2000;
             user.WorkTime = 0;
-            Api.Group(group_id, "²©Ê¿ÄãĞÑÁË~½ñÌìÊÇ" + DateTime.Now.Month + "ÔÂ" + DateTime.Now.Day + "ÈÕÅ¶£¡ÖÁÓÚÄãµÄÇ®°üÎªÊ²Ã´ÉÙÁË2000½ğ±Ò£¬ÎÒÒ²²»ÊÇºÜÇå³ş~");
+            Api.Group(group_id, "ä»Šå¤©" + DateTime.Now.Month + "æœˆ" + DateTime.Now.Day + "æ—¥ï¼æ—©å®‰åšå£«ï¼Œä»Šå¤©ç¡å¾—å¾ˆèˆ’æœå—ï¼Ÿ");
         }
         else
         {
-            Api.Group(group_id, "´íÎó£¬Ö´ĞĞTT2Ğ­ÒéĞèÒª2000½ğ±Ò¡£");
+            Api.Group(group_id, "æ‰§è¡ŒTT2åè®®éœ€è¦2000é‡‘å¸ã€‚");
         }
         WriteToFile(user);
     }
     /// <summary>
-    /// ³õÊ¼»¯ÈÎÎñÊôĞÔ
+    /// åˆå§‹åŒ–ä»»åŠ¡å±æ€§
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
@@ -900,7 +1078,7 @@ public class ReaderWriter
         WriteToFile(user);
     }
     /// <summary>
-    /// ¼ÇÒä
+    /// è®°å¿†
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
@@ -912,7 +1090,7 @@ public class ReaderWriter
         {
             using (StreamReader sr = new StreamReader("user/" + user_id + ".dat"))
             {
-                Api.Group(group_id, "ÚÀ,,,²©Ê¿°ÑÎÒÍüÁËÂğ...Ã»ÊÂµÄ£¬·çÁåÒ»Ö±¼ÇµÃ×¡²©Ê¿µÄ...");
+                Api.Group(group_id, "åšå£«ï¼Œæ˜¯è§‰å¾—è„‘å¶å…¬å¸çš„ç¯å¢ƒä¸å¤ªèˆ’é€‚å—ï¼Ÿè¦ä¸å°è¯•å»å¤–é¢å‘¼å¸ä¸€ä¸‹æ–°é²œç©ºæ°”ï¼Ÿæˆ–è€…æ‰¾Netzachè¦ä¸€ç‚¹è„‘å•¡è‚½...å¼€ç©ç¬‘çš„ï¼Œæˆ‘ç»™ä½ å»æ³¡ä¸€æ¯å’–å•¡å§ï¼");
             }
         }
         else
@@ -922,12 +1100,12 @@ public class ReaderWriter
             Init(user_id);
             user.name = name;
             WriteToFile(user);
-            Api.Group(group_id, "½Ğ×ö " + name + " ÊÇ°É£¬·çÁå»áÓÀÔ¶Ãú¼ÇÔÚĞÄÀïµÄ!");
-            Find(group_id,user_id,name);
+            Api.Group(group_id, "" + name + "åšå£«ä½ å¥½ï¼Œæˆ‘æ˜¯è„‘å¶å…¬å¸çš„AIåŠ©ç†ï¼šé£é“ƒã€‚åœ¨æ¥ä¸‹æ¥è„‘å¶å…¬å¸å’Œç½—å¾·å²›åˆä½œåˆåŒç”Ÿæ•ˆæœŸé—´ï¼Œæˆ‘ä¼šä½œä¸ºåšå£«çš„ç§äººåŠ©ç†ï¼Œå¸®åŠ©åšå£«ç®¡ç†å¼‚æƒ³ä½“ã€‚");
+            Find(group_id, user_id, name);
         }
     }
     /// <summary>
-    /// »Ø´ğ
+    /// å›ç­”
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="message"></param>
@@ -953,7 +1131,7 @@ public class ReaderWriter
         return false;
     }
     /// <summary>
-    /// Ôö¼ÓÌáÎÊ
+    /// å¢åŠ æé—®
     /// </summary>
     /// <param name="group_id"></param>
     /// <param name="user_id"></param>
@@ -962,7 +1140,7 @@ public class ReaderWriter
     /// <returns></returns>
     public bool Question(string group_id, string user_id, string name, string message)
     {
-        if (!message.Contains("¼ÓÈëÎÊ´ğ"))
+        if (!message.Contains("åŠ å…¥é—®ç­”"))
             return false;
 
         string[] str;
@@ -971,26 +1149,26 @@ public class ReaderWriter
         else
             str = message.Split("\n");
 
-        if (!str[0].Contains("¼ÓÈëÎÊ´ğ"))
+        if (!str[0].Contains("åŠ å…¥é—®ç­”"))
             return false;
         if (!str[0].Contains("Vague") && !str[0].Contains("Static"))
         {
-            Api.Group(group_id, "1¸ñÊ½£º¼ÓÈëÎÊ´ğ ´¥·¢·½Ê½(Vague,Static)\nÎÊ£ºxxxx\n´ğ£ºxxxx\n£¨xxxxÎª×Ô¶¨ÒåÄÚÈİ£¬²¢ÇÒÒªÇóxxxxÄÚ²»»á»»ĞĞ\nVague.1000½ğ±Ò.ÎªÖ»Òª°üº¬Õâ¸ö´Ê¾Í»á»Ø´ğ£¬Static.100½ğ±Ò.Îª±ØĞëÏûÏ¢ÍêÈ«Æ¥Åä²Å»á»Ø´ğ");
+            Api.Group(group_id, "1æ ¼å¼ï¼šåŠ å…¥é—®ç­” è§¦å‘æ–¹å¼(Vague,Static)\né—®ï¼šxxxx\nç­”ï¼šxxxx\nï¼ˆxxxxä¸ºè‡ªå®šä¹‰å†…å®¹ï¼Œå¹¶ä¸”è¦æ±‚xxxxå†…ä¸ä¼šæ¢è¡Œ\nVague.1000é‡‘å¸.ä¸ºåªè¦åŒ…å«è¿™ä¸ªè¯å°±ä¼šå›ç­”ï¼ŒStatic.100é‡‘å¸.ä¸ºå¿…é¡»æ¶ˆæ¯å®Œå…¨åŒ¹é…æ‰ä¼šå›ç­”");
             return true;
         }
-        if (!str[1].Contains("ÎÊ£º"))
+        if (!str[1].Contains("é—®ï¼š"))
         {
-            Api.Group(group_id, "2¸ñÊ½£º¼ÓÈëÎÊ´ğ ´¥·¢·½Ê½(Vague,Static)\nÎÊ£ºxxxx\n´ğ£ºxxxx\n£¨xxxxÎª×Ô¶¨ÒåÄÚÈİ£¬²¢ÇÒÒªÇóxxxxÄÚ²»»á»»ĞĞ\nVague.1000½ğ±Ò.ÎªÖ»Òª°üº¬Õâ¸ö´Ê¾Í»á»Ø´ğ£¬Static.100½ğ±Ò.Îª±ØĞëÏûÏ¢ÍêÈ«Æ¥Åä²Å»á»Ø´ğ");
+            Api.Group(group_id, "2æ ¼å¼ï¼šåŠ å…¥é—®ç­” è§¦å‘æ–¹å¼(Vague,Static)\né—®ï¼šxxxx\nç­”ï¼šxxxx\nï¼ˆxxxxä¸ºè‡ªå®šä¹‰å†…å®¹ï¼Œå¹¶ä¸”è¦æ±‚xxxxå†…ä¸ä¼šæ¢è¡Œ\nVague.1000é‡‘å¸.ä¸ºåªè¦åŒ…å«è¿™ä¸ªè¯å°±ä¼šå›ç­”ï¼ŒStatic.100é‡‘å¸.ä¸ºå¿…é¡»æ¶ˆæ¯å®Œå…¨åŒ¹é…æ‰ä¼šå›ç­”");
             return true;
         }
-        if (!message.Contains("´ğ£º"))
+        if (!message.Contains("ç­”ï¼š"))
         {
-            Api.Group(group_id, "3¸ñÊ½£º¼ÓÈëÎÊ´ğ ´¥·¢·½Ê½(Vague,Static)\nÎÊ£ºxxxx\n´ğ£ºxxxx\n£¨xxxxÎª×Ô¶¨ÒåÄÚÈİ£¬²¢ÇÒÒªÇóxxxxÄÚ²»»á»»ĞĞ\nVague.1000½ğ±Ò.ÎªÖ»Òª°üº¬Õâ¸ö´Ê¾Í»á»Ø´ğ£¬Static.100½ğ±Ò.Îª±ØĞëÏûÏ¢ÍêÈ«Æ¥Åä²Å»á»Ø´ğ");
+            Api.Group(group_id, "3æ ¼å¼ï¼šåŠ å…¥é—®ç­” è§¦å‘æ–¹å¼(Vague,Static)\né—®ï¼šxxxx\nç­”ï¼šxxxx\nï¼ˆxxxxä¸ºè‡ªå®šä¹‰å†…å®¹ï¼Œå¹¶ä¸”è¦æ±‚xxxxå†…ä¸ä¼šæ¢è¡Œ\nVague.1000é‡‘å¸.ä¸ºåªè¦åŒ…å«è¿™ä¸ªè¯å°±ä¼šå›ç­”ï¼ŒStatic.100é‡‘å¸.ä¸ºå¿…é¡»æ¶ˆæ¯å®Œå…¨åŒ¹é…æ‰ä¼šå›ç­”");
             return true;
         }
         if (str[1].Length <= 3)
         {
-            Api.Group(group_id, "½ûÖ¹ÌáÎÊÄÚÈİĞ¡ÓÚµÈÓÚ1¸ö×Ö");
+            Api.Group(group_id, "ç¦æ­¢æé—®å†…å®¹å°äºç­‰äº1ä¸ªå­—");
             return true;
         }
         UserInfo user = GetUserInfo(user_id);
@@ -1003,7 +1181,7 @@ public class ReaderWriter
                 {
                     Rec.Add(str[1].Substring(2), str[2].Substring(2));
                     user.money -= 1000;
-                    Api.Group(group_id, "Ìí¼Ó³É¹¦£¡ÄÇÃ´Õâ¸ö1000½ğ±Ò£¬ÎÒ¾ÍÊÕÏÂÁËÅ¶~\nµ±Ç°½ğ±Ò" + user.money);
+                    Api.Group(group_id, "æ·»åŠ æˆåŠŸï¼é‚£ä¹ˆè¿™ä¸ª1000é‡‘å¸ï¼Œæˆ‘å°±æ”¶ä¸‹äº†å“¦~\nå½“å‰é‡‘å¸" + user.money);
                     using (StreamWriter sr1 = new StreamWriter("MessageVague.dat"))
                     {
                         foreach (var i in Rec)
@@ -1015,12 +1193,12 @@ public class ReaderWriter
                 }
                 catch
                 {
-                    Api.Group(group_id, "ÒÑ¾­ÓĞÕâ¸ö´ÊÁË...");
+                    Api.Group(group_id, "å·²ç»æœ‰è¿™ä¸ªè¯äº†...");
                 }
             }
             else
             {
-                Api.Group(group_id, "ËÆºõÄúµÄ½ğ±ÒÓĞµã²»¹»ÄØ~" + name + "\nµ±Ç°½ğ±Ò£º" + user.money + "\nĞèÇó½ğ±Ò£º1000");
+                Api.Group(group_id, "ä¼¼ä¹æ‚¨çš„é‡‘å¸æœ‰ç‚¹ä¸å¤Ÿå‘¢~" + name + "\nå½“å‰é‡‘å¸ï¼š" + user.money + "\néœ€æ±‚é‡‘å¸ï¼š1000");
             }
         }
         else if (str[0].Contains("Static"))
@@ -1031,7 +1209,7 @@ public class ReaderWriter
                 {
                     Tip.Add(str[1].Substring(2), str[2].Substring(2));
                     user.money -= 100;
-                    Api.Group(group_id, "Ìí¼Ó³É¹¦£¡ÄÇÃ´Õâ¸ö100½ğ±Ò£¬ÎÒ¾ÍÊÕÏÂÁËÅ¶~\nµ±Ç°½ğ±Ò" + user.money);
+                    Api.Group(group_id, "æ·»åŠ æˆåŠŸï¼é‚£ä¹ˆè¿™ä¸ª100é‡‘å¸ï¼Œæˆ‘å°±æ”¶ä¸‹äº†å“¦~\nå½“å‰é‡‘å¸" + user.money);
                     using (StreamWriter sr2 = new StreamWriter("MessageStatic.dat"))
                     {
                         foreach (var i in Tip)
@@ -1043,15 +1221,103 @@ public class ReaderWriter
                 }
                 catch
                 {
-                    Api.Group(group_id, "ÒÑ¾­ÓĞÕâ¸ö´ÊÁË...");
+                    Api.Group(group_id, "å·²ç»æœ‰è¿™ä¸ªè¯äº†...");
                 }
             }
             else
             {
-                Api.Group(group_id, "ËÆºõÄúµÄ½ğ±ÒÓĞµã²»¹»ÄØ~" + name + "\nµ±Ç°½ğ±Ò£º" + user.money + "\nĞèÇó½ğ±Ò£º100");
+                Api.Group(group_id, "ä¼¼ä¹æ‚¨çš„é‡‘å¸æœ‰ç‚¹ä¸å¤Ÿå‘¢~" + name + "\nå½“å‰é‡‘å¸ï¼š" + user.money + "\néœ€æ±‚é‡‘å¸ï¼š100");
             }
         }
         return true;
+    }
+    /// <summary>
+    /// å¢å¹…
+    /// </summary>
+    /// <param name="group_id"></param>
+    /// <param name="user_id"></param>
+    /// <param name="name"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static int[] moneyCost = { 10, 50, 100, 200, 400, 600, 1000, 2000, 3500, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000,45000,100000000 };
+    public static void Increase(string group_id, string user_id, string name, string message)
+    {
+        if (message.Length > 6)
+            return;
+        UserInfo user = GetUserInfo(user_id);
+        if (message.Contains("æ­¦å™¨"))
+        {
+            if (user.money >= moneyCost[user.WeaponIncrease])
+            {
+                user.money -= moneyCost[user.WeaponIncrease];
+                if (random.NextDouble() < 0.4)
+                {
+                    user.WeaponIncrease++;
+                    Api.Group(group_id, "å¼ºåŒ–æˆåŠŸï¼Œå½“å‰æ­¦å™¨å¢å¹…æ•°å€¼ï¼š" + user.WeaponIncrease + "\næ¶ˆè€—äº†ï¼š" + moneyCost[user.WeaponIncrease - 1] + "é‡‘å¸ï¼Œå½“å‰å‰©ä½™é‡‘å¸ï¼š" + user.money);
+                }
+                else
+                {
+                    if (random.NextDouble() < 0.3)
+                    {
+                        user.money += moneyCost[user.WeaponIncrease] / 2;
+                        Api.Group(group_id, "å¼ºåŒ–å¤±è´¥ï¼Œé£é“ƒå†³å®šè¿˜ä½ æœ¬æ¬¡å¼ºåŒ–50%çš„é‡‘å¸\næ¶ˆè€—äº†ï¼š"+ moneyCost[user.WeaponIncrease] / 2 + "é‡‘å¸ï¼Œå½“å‰å‰©ä½™é‡‘å¸ï¼š" + user.money);
+                    }
+                    else if (random.NextDouble() < 0.3)
+                    {
+                        user.money += moneyCost[user.WeaponIncrease];
+                        Api.Group(group_id, "å¼ºåŒ–å¤±è´¥ï¼Œé£é“ƒå†³å®šè¿˜ä½ æœ¬æ¬¡å¼ºåŒ–100%çš„é‡‘å¸");
+                    }
+                    else Api.Group(group_id, "å¼ºåŒ–å¤±è´¥ï¼ä¹äº†ï¼ \nå¦‚æœè§‰å¾—é£é“ƒåˆ·å±äº†ï¼Œå¯ä»¥å»ç§èŠå¼ºåŒ–æ­¦å™¨\næ¶ˆè€—äº†ï¼š" + moneyCost[user.WeaponIncrease]  + "é‡‘å¸ï¼Œå½“å‰å‰©ä½™é‡‘å¸ï¼š" + user.money);
+
+                }
+            }
+            else
+            {
+                Api.Group(group_id, "é‡‘å¸ä¸è¶³ï¼Œéœ€è¦é‡‘å¸ï¼š" + moneyCost[user.WeaponIncrease]);
+            }
+            WriteToFile(user);
+            return ;
+        }
+        if (message.Contains("æŠ¤ç”²"))
+        {
+            if (user.money >= moneyCost[user.ArmorIncrease])
+            {
+                user.money -= moneyCost[user.ArmorIncrease];
+                if (random.NextDouble() < 0.25)
+                {
+                    user.ArmorIncrease++;
+                    Api.Group(group_id, "å¼ºåŒ–æˆåŠŸï¼Œå½“å‰é˜²å…·å¢å¹…æ•°å€¼ï¼š" + user.ArmorIncrease+ "\næ¶ˆè€—äº†ï¼š" + moneyCost[user.ArmorIncrease-1] + "é‡‘å¸ï¼Œå½“å‰å‰©ä½™é‡‘å¸ï¼š" + user.money);
+                }
+                else
+                {
+                    if (random.NextDouble() < 0.3)
+                    {
+                        user.money += moneyCost[user.ArmorIncrease] / 2;
+                        Api.Group(group_id, "å¼ºåŒ–å¤±è´¥ï¼Œé£é“ƒå†³å®šè¿˜ä½ æœ¬æ¬¡å¼ºåŒ–50%çš„é‡‘å¸\næ¶ˆè€—äº†ï¼š" + moneyCost[user.ArmorIncrease] / 2 + "é‡‘å¸ï¼Œå½“å‰å‰©ä½™é‡‘å¸ï¼š" + user.money);
+                    }
+                    else if (random.NextDouble() < 0.3)
+                    {
+                        user.money += moneyCost[user.ArmorIncrease];
+                        Api.Group(group_id, "å¼ºåŒ–å¤±è´¥ï¼Œé£é“ƒå†³å®šè¿˜ä½ æœ¬æ¬¡å¼ºåŒ–100%çš„é‡‘å¸");
+                    }
+                    else Api.Group(group_id, "å¼ºåŒ–å¤±è´¥ï¼ä¹äº†ï¼ \nå¦‚æœè§‰å¾—é£é“ƒåˆ·å±äº†ï¼Œå¯ä»¥å»ç§èŠå¼ºåŒ–æ­¦å™¨\næ¶ˆè€—äº†ï¼š" + moneyCost[user.ArmorIncrease] + "é‡‘å¸ï¼Œå½“å‰å‰©ä½™é‡‘å¸ï¼š" + user.money);
+                }
+                WriteToFile(user);
+                return ;
+            }
+            else
+            {
+                Api.Group(group_id, "é‡‘å¸ä¸è¶³ï¼Œéœ€è¦é‡‘å¸ï¼š" + moneyCost[user.ArmorIncrease]);
+            }
+        }
+        if (message.Contains("æŸ¥è¯¢"))
+        {
+            Api.Group(group_id, "æœ¬æ¬¡æ­¦å™¨å¼ºåŒ–éœ€è¦é‡‘å¸ï¼š" + moneyCost[user.WeaponIncrease] + "\né˜²å…·å¼ºåŒ–éœ€è¦ï¼š" + moneyCost[user.ArmorIncrease]);
+            return ;
+        }
+
+        Api.Group(group_id, "åšå£«ï¼Œæ‚¨æƒ³å¯¹ä½ çš„EGOæ­¦å™¨è¿›è¡Œå¼ºåŒ–å—ï¼Ÿå¯ä»¥å‚è€ƒä¸€ä¸‹ä¸‹é¢çš„æ ¼å¼å“¦ï¼\næ ¼å¼ï¼š\nå¼ºåŒ– [æ­¦å™¨ã€æŠ¤ç”²ã€æŸ¥è¯¢] \nå¦‚æœè§‰å¾—é£é“ƒåˆ·å±äº†ï¼Œå¯ä»¥å»ç§èŠå¼ºåŒ–æ­¦å™¨\nPS.å¼ºåŒ–çš„EGOä¸ä¼šå› ä¸ºæ›´æ¢EGOè€Œä¸¢å¤±å¼ºåŒ–æ•°å€¼ã€‚");
+        return ;
     }
 }
 

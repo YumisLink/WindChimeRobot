@@ -10,98 +10,126 @@ public struct PyRunResult
 }
 public class PythonExecutor 
 {
-    public void main()
+
+    public static void Mastery(string group_id,string name,string skill)
     {
-        Task<string> i = sdnc();
-        Console.WriteLine("other");
+        Task<string> i = mastery(group_id,name,skill);
+    }
+    private static async Task<string> mastery(string group_id, string name, string skill)
+    {
+        string ret;
+        ret = await Task.Run(() => Pyrun(name + "\n" + skill, "FindCL.py"));
+        if (ret == "None")
+        {
+            Api.Group(group_id, "无法找到" + name + "的技能" + skill);
+            return ret;
+        }
+        ret = ZLcode(ret);
+        //Console.WriteLine(ret);
+        Api.Group(group_id, ret);
+        return ret;
+    }
+
+    private static string ZLcode(string str)
+    {
+        string[] ct = str.Split("\n");
+        string ret = ct[0];
+        string save = null;
+        int cnt = 1;
+        for (int i = 2; i < ct.Length; i++)
+        {
+            if (save == null)
+            {
+                save = ct[i];
+                save = save.Replace("\r", "");
+            }
+            else
+            {
+                if (ct[i].Contains("技巧概要"))
+                    ret += "\n专精" + cnt++ + "：";
+                else
+                    ret += "\n        ";
+                ret +=  save + "个" + ct[i];
+                save = null;
+            }
+        }
+        return ret;
+    }
+
+
+
+
+
+    public static void NextCodeforce(string group_id)
+    {
+
+        Task<string> i = nextCodeforce(group_id);
+    }
+    private static async Task<string> nextCodeforce(string group_id)
+    {
+        string ret;
+        ret = await Task.Run(() => Pyrun(null,"NextRun.py"));
+        //Func<string, string> fun = new Func<string, string>(Pyrun);
+        //ret = await Task.Run(fun => sid);
+        //一大堆解析内容
+
+        ret = ret.Replace("#", "x");
+        Api.Group(group_id,ret);
+        return ret;
+    }
+
+
+
+
+
+    public static void main(string group_id,string ss)
+    {
+        Task<string> i = sdnc(group_id,ss);
+        //Console.WriteLine("other");
         
     }
-    public string pyrun()
+    public static async Task<string> sdnc(string group_id,string sid)
+    {
+        string ret;
+        ret = await Task.Run(() => Pyrun(sid,"a.py"));
+        //Func<string, string> fun = new Func<string, string>(Pyrun);
+        //ret = await Task.Run(fun => sid);
+        //一大堆解析内容
+        Api.Group(group_id, sid+"的CF分数是："+ret);
+        return ret;
+        
+    }
+
+    public static string Pyrun(string input, string pycode)
     {
 
         Process process = new Process();
         var startInfo = process.StartInfo;
-        startInfo.FileName = "py";
+        startInfo.FileName = "python3";
+        //startInfo.FileName = "py ";
         startInfo.RedirectStandardOutput = true;
         startInfo.RedirectStandardInput = true;
-        startInfo.ArgumentList.Add("wssb.py");
+        startInfo.ArgumentList.Add("Python/" + pycode);
+        //startInfo.ArgumentList.Add(pycode);
 
         process.Start();
 
 
         var inputSteam = process.StandardInput;
-        inputSteam.WriteLine("shabi py");
+        if (input!=null)
+        inputSteam.WriteLine(input);
 
 
         //process.WaitForExit();
-        bool isExit = process.WaitForExit(2000);
-        if (!isExit) process.Kill();
+        bool isExit = process.WaitForExit(5000);
+        if (!isExit)
+        {
+            process.Kill();
+            return "草泥马，网络延迟！我也没有办法，傻逼腾讯服务器！";
+        }
 
         var outputStream = process.StandardOutput;
         string output = outputStream.ReadToEnd();
         return output;
-
-        /*
-        var compilerProcess = new Process();
-        try
-        {
-            var startInfo = compilerProcess.StartInfo;
-            startInfo.UseShellExecute = false;
-            startInfo.FileName = "py";
-            startInfo.CreateNoWindow = true;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardInput = true;
-            startInfo.WorkingDirectory = workDirectory;
-            startInfo.ArgumentList.Add(targetFile.FullName);
-
-            compilerProcess.Start();
-            if (!string.IsNullOrEmpty(input))
-            {
-                await using var inputStream = compilerProcess.StandardInput;
-                await inputStream.WriteAsync(input);
-            }
-            await compilerProcess.WaitForExitAsync(token);
-
-            using var outputStream = compilerProcess.StandardOutput;
-            var output = await outputStream.ReadToEndAsync();
-
-            return new ExecuteResult
-            {
-                ExitCode = compilerProcess.ExitCode,
-                Output = output,
-                ElapsedTime = compilerProcess.GetRunningTimeMS()
-            };
-        }
-        catch (TaskCanceledException)
-        {
-            return new ExecuteResult
-            {
-                ExitCode = -233,
-                Output = "TLE"
-            };
-        }
-        catch (Exception e)
-        {
-            return new ExecuteResult
-            {
-                ExitCode = -233,
-                Output = $"未成功执行,原因:{e.Message}"
-            };
-        }
-        finally
-        {
-            compilerProcess.Kill(true);
-            compilerProcess.Close();
-            compilerProcess.Dispose();
-        }
-        */
-    }
-    public async Task<string> sdnc()
-    {
-        string ret = await Task.Run(new Func<string>(pyrun));
-        //一大堆解析内容
-        Console.Write(ret);
-        return ret;
-        
     }
 }

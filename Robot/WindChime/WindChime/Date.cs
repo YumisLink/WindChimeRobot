@@ -11,7 +11,7 @@ public class Date
             w.WriteLine(ss);
             w.Close();
         }
-        catch (Exception e)
+        catch 
         {
             Api.Private("635691684", "DateError");
         }

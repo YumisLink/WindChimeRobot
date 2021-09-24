@@ -1,181 +1,190 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+
+public enum ItemLevel
+{
+    ZAYIN,TETH,HE,WAW,ALEPH,FINAL
+}
 public class Item
 {
     public double Health = 0;
     public double Sprite = 0;
     public double Dodge = 0;
     public double Speed = 0;
-    public string name;
+    public string Name;
+    public ItemLevel Level;
+    public string Detail;
+    public Possvie pos;
+    public override string ToString()
+    {
+        return Name;
+    }
 }
 public class Weapon : Item
 {
-    public int speed;
-    public string atk;
-    public virtual string Attack(Hero Target, double TZ, double damagefloat)
+    public Weapon(string name,int speed,AttackTpye type,int BD,int FD,ItemLevel lv)
     {
-        return "当前没有武器,无法造成伤害";
+        Name = name;
+        AttackSpeed = speed;
+        Type = type;
+        BaseDamage = BD;
+        FloatDamage = FD;
+        Level = lv;
     }
-    public virtual string Attack(Hero Self ,Hero Target, double TZ, double damagefloat)
+    public void SetSpc(int GL, AttackTpye type, int BD, int FD)
     {
-        return Attack(Target,TZ,damagefloat);
+        SpcGL = GL;
+        SpcType = type;
+        SpcBaseDamage = BD;
+        SpcFloatDamage = FD;
     }
-}
-/// <summary>
-/// 镇暴棍
-/// </summary>
-public class AntiViolence : Weapon
-{
-    public AntiViolence() { speed = 1200;name = "镇暴棍"; atk = "RED 3-5"; }
-    public override string Attack(Hero Target, double TZ, double damagefloat)
+
+    public int AttackSpeed;
+    public AttackTpye Type;
+    public int BaseDamage;
+    public int FloatDamage;
+
+    public AttackTpye SpcType;
+    public int SpcBaseDamage;
+    public int SpcFloatDamage;
+    public int SpcGL;
+    public virtual string Attack(Hero Self, Hero Target)
     {
-        if (TZ * 400 <= Target.Dodge)
+        if (EGOSTRONGER.random.NextDouble() * 400 <= Target.Dodge)
         {
-            return "使用了 镇暴棍 但是被" + Target.name + "闪避了！";
+            return "使用了 " + Name + " 但是被" + Target.name + "闪避了！";
         }
-        Damage damage;
-        damage.damage = 3 + damagefloat * 2;
-        damage.type = AttackTpye.RED;
-        Target.UnderAttack(damage);
-        return "使用了 镇暴棍 对 " + Target.name + " 造成了 " + Math.Round(damage.damage) + " 点 红色 伤害！"+ Target.name + "剩余血量：" + Math.Round(Target.Hp);
-    }
-}
-/// <summary>
-/// 割腕者
-/// </summary>
-public class WristCutter : Weapon
-{
-    public WristCutter() { speed = 300; name = "割腕者"; atk = "WHITE 2-4"; }
-    public override string Attack(Hero Target, double TZ, double damagefloat)
-    {
-        if (TZ * 400 <= Target.Dodge)
+        string str = "使用了" + Name + "对 " + Target.name + " 造成了 ";
+        Damage damage = new Damage
         {
-            return "使用了 割腕者 但是被" + Target.name + "闪避了！";
-        }
-        Damage damage; 
-        if (TZ <= 0.1)
+            damage = BaseDamage + EGOSTRONGER.random.NextDouble() * FloatDamage,
+            type = Type
+        };
+        if (EGOSTRONGER.random.NextDouble()* 100 < SpcGL)
         {
-            damage.damage = 10 + damagefloat * 10;
-            damage.type = AttackTpye.RED;
-            Target.UnderAttack(damage);
-            return "使用了 ***割腕者触发了特殊攻击*** 对 " + Target.name + " 造成了 " + Math.Round(damage.damage) + " 点 红色 伤害！" + Target.name + "剩余血量：" + Math.Round(Target.Hp);
+            damage.type = SpcType;
+            damage.damage = SpcBaseDamage + EGOSTRONGER.random.NextDouble() * SpcFloatDamage;
         }
-        damage.damage = 2 + damagefloat * 2;
-        damage.type = AttackTpye.WHITE;
-        Target.UnderAttack(damage);
-        return "使用了 割腕者 对 " + Target.name + " 造成了 " + Math.Round(damage.damage) + " 点 白色 伤害！" + Target.name + "剩余精神：" + Math.Round(Target.Mp);
-    }
-}
-/// <summary>
-/// 声呐
-/// </summary>
-public class Sonar : Weapon
-{
-    public Sonar() { speed = 300; name = "声呐"; atk = "WHITE 14-28"; }
-    public override string Attack(Hero Target, double TZ, double damagefloat)
-    {
-        if (TZ * 400 <= Target.Dodge)
+        damage.damage *= (1 + 0.2 * Self.WeaponUp);
+        damage.damage += Self.Strong;
+        damage.damage -= Self.weak;
+        if (Self.weapon.pos!= null)
+            Self.weapon.pos.BeforeDealDamage(Self, Target, damage);
+        if (Self.pos != null)
+            Self.pos.BeforeDealDamage(Self, Target, damage);
+        if (Target.weapon.pos != null)
+            Target.weapon.pos.BeforeTakeDamage(Target,Self,damage);
+        if (Target.pos != null)
+            Target.pos.BeforeTakeDamage(Target, Self, damage);
+        if (damage.damage < 0) damage.damage = 0;
+        switch (damage.type)
         {
-            return "使用了 声呐 但是被" + Target.name + "闪避了！";
+            case (AttackTpye.RED):
+                damage.type = AttackTpye.RED;
+                Target.UnderAttack(damage);
+                damage.damage *= Target.RED;
+                str += Math.Round(damage.damage) + " 点红色伤害！" + Target.name;
+                str += "剩余血量：" + Math.Round(Target.Hp);
+                break;
+            case (AttackTpye.WHITE):
+                damage.type = AttackTpye.WHITE;
+                Target.UnderAttack(damage);
+                damage.damage *= Target.WHITE;
+                str += Math.Round(damage.damage) + " 点白色伤害！" + Target.name;
+                str += "剩余精神：" + Math.Round(Target.Mp);
+                break;
+            case (AttackTpye.BLACK):
+                damage.type = AttackTpye.BLACK;
+                Target.UnderAttack(damage);
+                damage.damage *= Target.BLACK;
+                str += Math.Round(damage.damage) + " 点黑色伤害！" + Target.name;
+                str += "剩余精神：" + Math.Round(Target.Mp) + "剩余血量：" + Math.Round(Target.Hp);
+                break;
+            case (AttackTpye.PALE):
+                damage.type = AttackTpye.PALE;
+                Target.UnderAttack(damage);
+                damage.damage *= Target.PALE;
+                str += Math.Round(damage.damage) + " 点蓝色伤害！" + Target.name;
+                str += "剩余血量：" + Math.Round(Target.Hp);
+                break;
         }
-        Damage damage;
-        damage.damage = 14 + damagefloat * 14;
-        damage.type = AttackTpye.WHITE;
-        Target.UnderAttack(damage);
-        return "使用了 声呐 对 " + Target.name + " 造成了 " + Math.Round(damage.damage) + " 点 白色 伤害！" + Target.name + "剩余精神：" + Math.Round(Target.Mp);
-    }
-}
-public class Angle : Weapon
-{
-    public static int cnt = 0;
-    public Angle() { speed = 600; name = "天使的职责"; atk = "BLACK 20-22"; }
-    public override string Attack(Hero Target, double TZ, double damagefloat)
-    {
-        if (TZ * 400 <= Target.Dodge)
-        {
-            return "使用了 天使的职责 但是被" + Target.name + "闪避了！";
-        }
-        Damage damage;
-        if (cnt == 3)
-        {
-            cnt = 0;
-            damage.damage = 80;
-            damage.type = AttackTpye.RED;
-            Target.UnderAttack(damage);
-            return "使用了 ***天使的职责触发了特殊攻击*** 对 " + Target.name + " 造成了 " + Math.Round(damage.damage) + " 点 红色 伤害！" + Target.name + "剩余血量：" + Math.Round(Target.Hp);
-        }
-        cnt++;
-        damage.damage = 2 + damagefloat * 2;
-        damage.type = AttackTpye.BLACK;
-        Target.UnderAttack(damage);
-        return "使用了 天使的职责 对 " + Target.name + " 造成了 " + Math.Round(damage.damage * 0.5) + " 点 白色 和 红色 伤害！" + Target.name + "剩余精神：" + Math.Round(Target.Mp) + "剩余血量：" + Math.Round(Target.Hp);
+        return str;
     }
 }
-public class WindChime : Weapon
-{
-    public static int cnt = 0;
-    public WindChime() { speed = 600; name = "天使的职责"; atk = "BLACK 20-22"; }
-    public override string Attack(Hero Target, double TZ, double damagefloat)
-    {
-        if (TZ * 400 <= Target.Dodge)
-        {
-            return "使用了 天使的职责 但是被" + Target.name + "闪避了！";
-        }
-        Damage damage;
-        if (cnt == 3)
-        {
-            cnt = 0;
-            damage.damage = 80;
-            damage.type = AttackTpye.RED;
-            Target.UnderAttack(damage);
-            return "使用了 ***天使的职责触发了特殊攻击*** 对 " + Target.name + " 造成了 " + Math.Round(damage.damage) + " 点 红色 伤害！" + Target.name + "剩余血量：" + Math.Round(Target.Hp);
-        }
-        cnt++;
-        damage.damage = 2 + damagefloat * 2;
-        damage.type = AttackTpye.BLACK;
-        Target.UnderAttack(damage);
-        return "使用了 天使的职责 对 " + Target.name + " 造成了 " + Math.Round(damage.damage * 0.5) + " 点 白色 和 红色 伤害！" + Target.name + "剩余精神：" + Math.Round(Target.Mp) + "剩余血量：" + Math.Round(Target.Hp);
-    }
-}
+
 public class Armor : Item
 {
-
     public double RED;
     public double WHITE;
     public double BLACK;
     public double PALE;
+    public Armor(string name, double R,double W,double B,double P, ItemLevel lv)
+    {
+        Name = name;
+        RED = R;
+        WHITE = W;
+        BLACK = B;
+        PALE = P;
+        Level = lv;
+    }
 }
-public class SuitArmor : Armor
-{
-    public SuitArmor() { RED = 1; WHITE = 1; BLACK = 1.5; PALE = 2;name = "西装"; }
-}
-public class WristCutterArmor : Armor
-{
-    public WristCutterArmor() { RED = 1; WHITE = 0.6; BLACK = 1.2; PALE = 2; name = "割腕者"; }
-}
-public class SonarArmor : Armor
-{
-    public SonarArmor() { RED = 0.7; WHITE = 0.7; BLACK = 1.0; PALE = 1.0; name = "声呐"; Speed = 50; }
-}
-public class SuperHell : Armor
-{
-    public SuperHell() { RED = 1.5; WHITE = 1.0; BLACK = 0.5; PALE = 1.5; name = "特制地狱"; Health = -30; Sprite = -30; Dodge += 30; Speed += 30;}
-}
+
 public class GameManager
 {
     public static List<Weapon> weapon = new List<Weapon>();
     public static List<Armor> armor = new List<Armor>();
     public GameManager()
     {
-        weapon.Add(new AntiViolence());
-        weapon.Add(new WristCutter());
-        weapon.Add(new Sonar());
-        weapon.Add(new Angle());
+        Weapon a;
+        Armor b;
+        using (StreamReader sr = new StreamReader("Weapon.dat"))
+        {
+            string line;
+            int cnt = 0;
+            while((line = sr.ReadLine())!= null)
+            {
+                string[] str = line.Split("\t");
+                weapon.Add(new Weapon(
+                    str[1], Convert.ToInt32(str[2]),
+                    (AttackTpye)Enum.Parse(typeof(AttackTpye), str[3]),
+                    Convert.ToInt32(str[4]), Convert.ToInt32(str[5]),
+                    (ItemLevel)Enum.Parse(typeof(ItemLevel), str[6])));
+                weapon[cnt].Detail = str[7];
+                cnt++;
+            }
+        }
+        weapon[9].pos = new QueenBeeWeapon();
+        weapon[5].pos = new AntiWhiteNight();
+        weapon[10].pos = new GreenStemWeapon();
+        weapon[13].pos = new Chord();
+        weapon[14].pos = new HolyEdict();
+        weapon[15].pos = new MagicShoot();
 
-        armor.Add(new SuitArmor());
-        armor.Add(new WristCutterArmor());
-        armor.Add(new SonarArmor());
-        armor.Add(new SuperHell());
+        weapon[16].pos = new BloodDesire();
+        weapon[18].pos = new Leatiita();
+        weapon[19].pos = new BlackSwan();
+
+        weapon[22].Sprite = -75;
+        weapon[22].pos = new Joyous();
+        weapon[24].pos = new DaCapo();
+
+
+
+        using (StreamReader sr = new StreamReader("Armor.dat"))
+        {
+            string line;
+            int cnt = 0;
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] str = line.Split("\t");
+                armor.Add(new Armor(
+                    str[1], Convert.ToDouble(str[2]),Convert.ToDouble(str[3]),
+                    Convert.ToDouble(str[4]), Convert.ToDouble(str[5]),
+                    (ItemLevel)Enum.Parse(typeof(ItemLevel), str[6])));
+                armor[cnt].Detail = str[7];
+                cnt++;
+            }
+        }
     }
-
 }

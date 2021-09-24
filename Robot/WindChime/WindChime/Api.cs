@@ -21,14 +21,15 @@ class Api {
         request.ContentType = "application/json";
         using var postDataStream = request.GetRequestStream();
         /*
+         * ssh root@1.15.115.226
         */
         var response = request.GetResponse();
         request.Abort();
-        Date.Write("----向" + user_id + "发送" + message);
+        Date.Write(DateTime.Now + "----向" + user_id + "发送" + message);
     }
     public static void Group(string group_id, string message)
     {
-        Date.Write("****在" + group_id + "发送" + message);
+        Date.Write(DateTime.Now + "****在" + group_id + "发送" + message);
         long Group_id = Convert.ToInt64(group_id);
 
         var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:5700/send_group_msg?group_id=" + group_id + "&message=" + message);

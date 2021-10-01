@@ -67,11 +67,14 @@ namespace Yumis
                         response.StatusCode = 200;
                         response.Close();
                         if (je.GetProperty("post_type").GetString() == "message")
+                        {
                             if (je.GetProperty("message_type").GetString() == "group")
                             {
                                 string sp = je.GetProperty("raw_message").GetString();
                                 string group_id = je.GetProperty("group_id").ToString();
                                 string user_id = je.GetProperty("user_id").ToString();
+                                string message_id = je.GetProperty("message_id").ToString();
+                                AntiHeJieqing.Main(sp,user_id,group_id,message_id);
                                 string name = je.GetProperty("sender").GetProperty("card").GetString();
                                 if (name == "" || name == null)
                                     name = je.GetProperty("sender").GetProperty("nickname").GetString();
@@ -138,6 +141,16 @@ namespace Yumis
                                 else if (sp.Contains("强化"))
                                     EGOSTRONGER.Increase(user_id, sp);
                             }
+                        }else if (je.GetProperty("post_type").GetString() == "notice")
+                        {
+                            if (je.GetProperty("notice_type").GetString() == "group_recall")
+                            {
+                                string mgid = je.GetProperty("message_id").ToString();
+                                string user = je.GetProperty("operator_id").ToString();
+                                AntiHeJieqing.Say(mgid,user);
+                            }
+                        }
+                            
                         //a.Group("976813092", je.GetProperty("raw_message").ToString());   
                     }
                 }
@@ -160,6 +173,8 @@ namespace Yumis
                 if (sp.Contains("下载") || sp.Contains("攻略"))
                     Api.Group("621976344", "完整客户端（解压即玩）\n https://yunpan.360.cn/surl_y6IQQTi3TCb \n新手教程 \n泡点2分钟1000代币券，刷图掉代币，70级可学二觉，深渊掉70~90已平衡SS，创建角色后方可开启左右槽，直接无色完成，单人四倍经验组队八倍经验，主线任务都经过优化，繁琐任务简化，可放心跟着主线任务刷图升级，罐子头NPC出售CC武器，幸达风振GSD凯丽歌兰蒂斯米内特出售全职业1~70级紫装，商城出售的三倍经验药和疲劳药无使用次数限制，契约可用点券购买黑钻。商城也可购买升级券直接升，NPC商店应有尽有，任务材料“凯丽”，副职业材料“诺顿”以及相应副职业导师都有出售，“卡妮娜商店”可以购买鸽服特色的一些道具，需要材料“鸽子兑换券”可以通过刷图翻牌获得。所有NPC商店都进行了优化，赛丽亚可以直接购买远古门票盒等。 \n本服以怀旧路线为基础，对大量诟病的机制进行优化并且加入大量特色道具、任务、和自创装备。\n深渊掉落删除“战神之意志 - X职业”之类的毒瘤装备，加入了“天御套”“魔战套”“恍惚套”等趣味装备，所有新加入装备图鉴在【群相册】查看。\n满级日常任务“远古”“异界”“武道”“安图恩”基本都是通关一到三次即可完成。去掉远古异界复活币限制。异界进入次数10次删除了全部异界套改为特色自制左槽，可在异界门口的NPC商店查看。");
             }
+            if (group_id == "621976344")
+                return true;
             if (sp.Contains("专精材料"))
             {
                 string[] str = sp.Split(" ");
@@ -187,6 +202,7 @@ namespace Yumis
             }
             if (sp.Contains("查分"))
             {
+                Api.Group(group_id, "正在开始查询......请不要重复提交查询。");
                 string str = sp.Replace("查分 ", "");
                 str = str.Replace("查分", "");
                 PythonExecutor.main(group_id, str);
@@ -194,7 +210,7 @@ namespace Yumis
             }
             if (sp == "CF" || sp == "Cf" || sp == "cf")
             {
-                Console.WriteLine("asd ");
+                Api.Group(group_id,"正在开始查询......请不要重复提交查询。");
                 PythonExecutor.NextCodeforce(group_id);
                 return true;
             }

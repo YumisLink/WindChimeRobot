@@ -121,7 +121,7 @@ public class PythonExecutor
 
 
         //process.WaitForExit();
-        bool isExit = process.WaitForExit(5000);
+        bool isExit = process.WaitForExit(20000);
         if (!isExit)
         {
             process.Kill();

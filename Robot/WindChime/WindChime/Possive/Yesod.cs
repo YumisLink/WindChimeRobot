@@ -22,6 +22,13 @@ public class HolyEdict : Possvie
         }
     }
 }
+public class MagicShooter : Possvie
+{
+    public override void BeforeTakeDamage(Hero self, Hero Target, Damage dam)
+    {
+        dam.damage= 1;
+    }
+}
 public class MagicShoot : Possvie
 {
     int cnt = 0;
@@ -29,13 +36,9 @@ public class MagicShoot : Possvie
     {
         cnt++;
         if (cnt == 7)
-        {
-            self.UnderAttack(dam);
-        }
+            self.UnderAttack(Target,dam);
         else
-        {
-            Target.UnderAttack(dam);
-        }
+            Target.UnderAttack(self, dam);
     }
 }
 

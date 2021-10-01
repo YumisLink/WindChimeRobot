@@ -6,10 +6,28 @@ public enum AttackTpye
 {
     RED, WHITE, BLACK, PALE, HEAL
 }
+public class DamageCount
+{
+    public double RED = 0;
+    public double WHITE = 0;
+    public double BLACK = 0;
+    public double PALE = 0;
+    public int Times = 0;
+}
 public class Damage
 {
     public AttackTpye type;
     public double damage;
+    public static string GetAttackTypeString(AttackTpye atk)
+    {
+        if (atk == AttackTpye.RED)
+            return "R";
+        if (atk == AttackTpye.WHITE)
+            return "W";
+        if (atk == AttackTpye.BLACK)
+            return "B";
+        return "P";
+    }
 }
 public class Hero
 {
@@ -17,15 +35,31 @@ public class Hero
     /// 被动
     /// </summary>
     public Possvie pos;
+    public Possvie boss;
+    public DamageCount AllAttack = new DamageCount();
     public static double max(double A, double B)
     {
         if (A > B)
             return A;
         return B;
     }
-    public Hero()
+    public Hero(){}
+    public Hero(Boss bs)
     {
-
+        name = bs.hero.name;
+        Hp = bs.hero.Hp;
+        Mp = bs.hero.Mp;
+        weapon = bs.hero.weapon;
+        pos = bs.hero.pos;
+        boss = bs.hero.boss;
+        Speed = bs.hero.Speed;
+        Dodge = bs.hero.Dodge;
+        WeaponUp = bs.hero.WeaponUp;
+        RED = bs.hero.RED;
+        WHITE = bs.hero.WHITE;
+        BLACK = bs.hero.BLACK;
+        PALE = bs.hero.PALE;
+        arm = null;
     }
     public Hero(UserInfo user)
     {
@@ -41,22 +75,22 @@ public class Hero
         Mp += weapon.Sprite;
         Dodge += (int)Math.Round(weapon.Dodge);
         Speed += (int)Math.Round(weapon.Speed);
-        Armor ar = GameManager.armor[user.EGOArmor];
-        Hp += ar.Health;
-        Mp += ar.Sprite;
-        Dodge += (int)Math.Round(ar.Dodge);
-        Speed += (int)Math.Round(ar.Speed);
+        arm = GameManager.armor[user.EGOArmor];
+        Hp += arm.Health;
+        Mp += arm.Sprite;
+        Dodge += (int)Math.Round(arm.Dodge);
+        Speed += (int)Math.Round(arm.Speed);
         WeaponUp = user.WeaponIncrease;
         ArmorUp = user.ArmorIncrease;
 
         RED = GameManager.armor[user.EGOArmor].RED;
-        RED = max(RED * (1 - user.ArmorIncrease * 0.04), RED - (user.ArmorIncrease * 0.03));
+        RED = max(RED * (1 - user.ArmorIncrease * 0.03), RED - (user.ArmorIncrease * 0.02));
         WHITE = GameManager.armor[user.EGOArmor].WHITE;
-        WHITE = max(WHITE * (1 - user.ArmorIncrease * 0.04), WHITE - (user.ArmorIncrease * 0.03));
+        WHITE = max(WHITE * (1 - user.ArmorIncrease * 0.03), WHITE - (user.ArmorIncrease * 0.02));
         BLACK = GameManager.armor[user.EGOArmor].BLACK;
-        BLACK = max(BLACK * (1 - user.ArmorIncrease * 0.04), BLACK - (user.ArmorIncrease * 0.03));
+        BLACK = max(BLACK * (1 - user.ArmorIncrease * 0.03), BLACK - (user.ArmorIncrease * 0.02));
         PALE = GameManager.armor[user.EGOArmor].PALE;
-        PALE = max(PALE * (1 - user.ArmorIncrease * 0.04), PALE - (user.ArmorIncrease * 0.03));
+        PALE = max(PALE * (1 - user.ArmorIncrease * 0.03), PALE - (user.ArmorIncrease * 0.02));
         if (user.Inhibition[0])
             Speed += 50;
     }
@@ -83,6 +117,10 @@ public class Hero
     /// 武器
     /// </summary>
     public Weapon weapon;
+    /// <summary>
+    /// 护甲
+    /// </summary>
+    public Armor arm;
     public double RED;
     public double WHITE;
     public double BLACK;
@@ -102,36 +140,47 @@ public class Hero
         if (Mp <= 0) return true;
         else return false;
     }
-    public void UnderAttack(Damage dam)
+    public void UnderAttack(Hero Target,Damage dam)
     {
         dam.damage += EasyAttack;
         dam.damage -= DefAttack;
         if (dam.damage < 0) dam.damage = 0;
         if (dam.type == AttackTpye.RED)
+        {
             Hp -= (dam.damage * RED);
+            Target.AllAttack.RED += dam.damage * RED;
+        }
 
         if (dam.type == AttackTpye.WHITE)
+        {
             Mp -= (dam.damage * WHITE);
+            Target.AllAttack.WHITE += dam.damage * WHITE;
+        }
 
         if (dam.type == AttackTpye.BLACK)
         {
-            Hp -= (dam.damage * BLACK * 0.75f);
-            Mp -= (dam.damage * BLACK * 0.75f);
+            Hp -= (dam.damage * BLACK * 0.6f);
+            Mp -= (dam.damage * BLACK * 0.6f);
+            Target.AllAttack.BLACK += dam.damage * BLACK;
         }
 
         if (dam.type == AttackTpye.PALE)
+        {
             Hp -= (dam.damage * PALE);
-
+            Target.AllAttack.PALE += dam.damage * BLACK;
+        }
+        Target.AllAttack.Times++;
         if (dam.type == AttackTpye.HEAL)
             Hp += dam.damage;
     }
     public override string ToString()
     {
-        string str = "";
-        str += "\n生命值：" + Hp;
-        str += "\n精神值：" + Mp;
+        string str = name;
+        str += "\n生命值：" + string.Format("{0:F2}", Hp);
+        str += "\n精神值：" + string.Format("{0:F2}", Mp);
         str += "\n闪避率：" + Dodge * 0.25 + "%";
         str += "\n攻击速度：" + (Speed + 50);
+        str += "\n武器：" + weapon.Name;
         return str;
     }
     public double GetDef(AttackTpye tpye)
@@ -157,8 +206,8 @@ public class War
             {
                 UserInfo user = ReaderWriter.GetUserInfo(line);
                 user.Rank = Rank.Count;
-                user.name = "null(未知)";
-                ReaderWriter.WriteToFile(user);
+                //user.name = "null(未知)";
+                //ReaderWriter.WriteToFile(user);
                 Rank.Add(line);
             }
         }
@@ -201,7 +250,7 @@ public class War
                 Api.Group(group_id, "无法找到" + ss[1]);
                 return true;
             }
-            int ret = battle(new Hero(A), new Hero(B), user_id);
+            int ret = Battle(new Hero(A), new Hero(B), user_id);
             if (ret == 1)
             {
                 int k = Math.Min(A.money / 2, B.money / 10);
@@ -226,7 +275,6 @@ public class War
         }
         if (message == "查询EGO" || message == "查询ego" || message == "EGO查询" || message == "ego查询")
         {
-            
             UserInfo A = ReaderWriter.GetUserInfo(user_id);
             string str = "";
             Weapon wp = GameManager.weapon[A.EGOWeapon];
@@ -235,43 +283,100 @@ public class War
             str += "\n武器攻击类型：" + wp.Type;
             str += "\n攻击速度：" + wp.AttackSpeed;
             if (wp.Detail != null)
-                str += wp.Detail;
+                str += "\n" + wp.Detail;
             double BD = wp.BaseDamage;
             double FD = wp.FloatDamage;
             double WI = A.WeaponIncrease;
-            str += "\n攻击力：" + String.Format("{0:F2}", (BD * (1 + WI * 0.2))) + "~" + String.Format("{0:F2}", ((BD + FD) * (1 + WI * 0.2)));
+            str += "\n攻击力：" + String.Format("{0:F2}", (BD * Math.Pow(1.05,WI))) + "~" + String.Format("{0:F2}", ((BD + FD) * Math.Pow(1.05, WI)));
             str += "\n当前佩戴EGO防具：➕" + A.ArmorIncrease + ar.Name;
-            str += "\n物理抗性(RED)：" + String.Format("{0:F2}", Hero.max(ar.RED * (1 - A.ArmorIncrease * 0.04), ar.RED - (A.ArmorIncrease * 0.03)));
-            str += "\n精神抗性(WHITE)：" + String.Format("{0:F2}", Hero.max(ar.WHITE * (1 - A.ArmorIncrease * 0.04), ar.WHITE - (A.ArmorIncrease * 0.03)));
-            str += "\n腐蚀抗性(BLACK)：" + String.Format("{0:F2}", Hero.max(ar.BLACK * (1 - A.ArmorIncrease * 0.04), ar.BLACK - (A.ArmorIncrease * 0.03)));
-            str += "\n灵魂抗性(PALE)：" + String.Format("{0:F2}", Hero.max(ar.PALE * (1 - A.ArmorIncrease * 0.04), ar.PALE - (A.ArmorIncrease * 0.03)));
+            str += "\n" + ar.Detail;
+            str += "\n物理抗性(RED)：" + String.Format("{0:F2}", Hero.max(ar.RED * (1 - A.ArmorIncrease * 0.03), ar.RED - (A.ArmorIncrease * 0.02)));
+            str += "\n精神抗性(WHITE)：" + String.Format("{0:F2}", Hero.max(ar.WHITE * (1 - A.ArmorIncrease * 0.03), ar.WHITE - (A.ArmorIncrease * 0.02)));
+            str += "\n腐蚀抗性(BLACK)：" + String.Format("{0:F2}", Hero.max(ar.BLACK * (1 - A.ArmorIncrease * 0.03), ar.BLACK - (A.ArmorIncrease * 0.02)));
+            str += "\n灵魂抗性(PALE)：" + String.Format("{0:F2}", Hero.max(ar.PALE * (1 - A.ArmorIncrease * 0.03), ar.PALE - (A.ArmorIncrease * 0.02)));
 
-            
-                str += "\n你拥有的EGO武器：";
-                for (int i = 0; i < GameManager.weapon.Count; i++)
-                    if (A.AllWeapon[i])
-                        str += GameManager.weapon[i].Name + " ";
-                str += "\n你拥有的EGO护甲：";
-                for (int i = 0; i < GameManager.armor.Count; i++)
-                    if (A.AllArmor[i])
-                        str += GameManager.armor[i].Name + " ";
-            
+
+            int j = 0;
+            str += "\n你拥有的EGO武器：";
+            for (int i = 0; i < GameManager.weapon.Count; i++)
+                if (A.AllWeapon[i])
+                    j ++;
+            str += j + "/" + GameManager.weapon.Count;
+            j = 0;
+            str += "\n你拥有的EGO护甲：";
+            for (int i = 0; i < GameManager.armor.Count; i++)
+                if (A.AllArmor[i])
+                    j++;
+            str += j + "/" + GameManager.armor.Count;
+            str += "\n如果要查询EGO请输入，“查询护甲”或者“查询武器”";
             Api.Group(group_id, str);
             return true;
         }
         if (message == "天梯赛" && message.Length <= 10)
         {
+            return false;
             TNT(group_id, user_id);
             Save();
+            return true;
         }
         if (message == "领取天梯赛奖励" && message.Length <= 10)
         {
+            return false;
             GetWER(group_id, user_id, name);
             Save();
+            return true;
+        }
+        if (message == "查询武器")
+        {
+            UserInfo A = ReaderWriter.GetUserInfo(user_id);
+            string str = "";
+            str += "你拥有的EGO武器：";
+            string strz = "", strt = "", strh = "", strw = "", stra = "", strf = "";
+            for (int i = 0; i < GameManager.weapon.Count; i++)
+            {
+                if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.ZAYIN)
+                    strz += GameManager.weapon[i]+"(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) +")  ";
+                if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.TETH)
+                    strt += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.HE)
+                    strh += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.WAW)
+                    strw += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.ALEPH)
+                    stra += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.FINAL)
+                    strf += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+            }
+            Api.Group(group_id, str+"\nZAYIN：" + strz + "\nTETH：" + strt+"\nHE：" + strh+"\nWAW：" + strw+"\nALEPH：" + stra+ "\nFINAL：" + strf);
+            return true;
+        }
+        if (message == "查询护甲")
+        {
+            UserInfo A = ReaderWriter.GetUserInfo(user_id);
+            string str = "";
+            str += "你拥有的EGO护甲：";
+            string strz = "", strt = "", strh = "", strw = "", stra = "", strf = "";
+            for (int i = 0; i < GameManager.armor.Count; i++)
+            {
+                if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.ZAYIN)
+                    strz += GameManager.armor[i] + "("  + GameManager.armor[i].Easy + ")  ";
+                if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.TETH)
+                    strt += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.HE)
+                    strh += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.WAW)
+                    strw += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.ALEPH)
+                    stra += GameManager.armor[i] + "("  + GameManager.armor[i].Easy + ")  ";
+                if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.FINAL)
+                    strf += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")、";
+            }
+            Api.Group(group_id, str + "\nZAYIN：" + strz + "\nTETH：" + strt + "\nHE：" + strh + "\nWAW：" + strw + "\nALEPH：" + stra + "\nFINAL：" + strf);
+            return true;
         }
         return false;
     }
-    public static void GetWER(string group_id, string user_id,string name)
+    public static void GetWER(string group_id, string user_id, string name)
     {
         UserInfo user;
         user = ReaderWriter.GetUserInfo(user_id);
@@ -338,6 +443,9 @@ public class War
     }
     public static void TNT(string group_id, string user_id)
     {
+        //初始的时候，所有人的rank等于-1
+        //GetUserInfo+string是获取这个人id下所有的属性
+        //Rank[]数组是string 里面存的是按照排名 的用户QQ号，数组从0开始数
         UserInfo A, B;
         A = ReaderWriter.GetUserInfo(user_id);
         if (A.money < 100)
@@ -348,7 +456,7 @@ public class War
         if (A.Rank == -1)
         {
             Rank.Add(A.id);
-            A.Rank = Rank.Count-1;
+            A.Rank = Rank.Count - 1;
             ReaderWriter.WriteToFile(A);
         }
         if (A.Rank == 0)
@@ -357,35 +465,47 @@ public class War
             ReaderWriter.WriteToFile(A);
             return;
         }
-        B = ReaderWriter.GetUserInfo(Rank[A.Rank-1]);
+        int get = A.Rank - 1;
+        if (get > 0)
+        {
+            if (ReaderWriter.random.NextDouble() <= 0.5)
+            {
+                get--;
+                if (get > 0)
+                    if (ReaderWriter.random.NextDouble() <= 0.5)
+                        get--;
+            }
+        }
+        B = ReaderWriter.GetUserInfo(Rank[get]);
         Hero AA, BB;
         AA = new Hero(A);
         BB = new Hero(B);
-        int result = battle(AA, BB, A.id);
+        int result = Battle(AA, BB, A.id);
         if (result == 1)
         {
             int k = B.Rank;
             B.Rank = A.Rank;
             A.Rank = k;
-
-            Rank[A.Rank] = A.id;
             Rank[B.Rank] = B.id;
-            Api.Group(group_id, "恭喜你战胜了位于天梯排行榜Rank." + (A.Rank+1) + "的" + B.name + "你成功成为了天梯排行榜的Rank." + (A.Rank+1));
+            Rank[A.Rank] = A.id;
+            Api.Group(group_id, "恭喜你战胜了位于天梯排行榜Rank." + (A.Rank + 1) + "的" + B.name + "你成功成为了天梯排行榜的Rank." + (A.Rank + 1));
         }
         else
         {
             Api.Group(group_id, "挑战失败了...如果有添加风铃好友，则可以查看战斗详情。");
         }
+        //把A和B的数据存入
         ReaderWriter.WriteToFile(A);
         ReaderWriter.WriteToFile(B);
     }
-    public static int battle(Hero A, Hero B, string user_id)
+    public static int Battle(Hero A, Hero B, string user_id)
     {
         Console.WriteLine(A.name + " VS " + B.name);
         Random rd = new Random();
         int speedA = 0, speedB = 0;
         int cnt = 0;
         string str = "";
+        double Aatt = 0, Batt = 0;
         A.weak = 0;
         A.Strong = 0;
         A.EasyAttack = 0;
@@ -404,35 +524,63 @@ public class War
             A.weapon.pos.Init();
         if (B.weapon.pos != null)
             B.weapon.pos.Init();
-        while (!A.IsDead() && !B.IsDead() && cnt <= 800)
+        while (!A.IsDead() && !B.IsDead() && cnt <= 1000)
         {
             if (A.pos != null)
-                A.pos.StartTurn(A,B);
+                A.pos.StartTurn(A, B);
             if (B.pos != null)
-                B.pos.StartTurn(B,A);
+                B.pos.StartTurn(B, A);
             if (A.weapon.pos != null)
-                A.weapon.pos.StartTurn(A,B);
+                A.weapon.pos.StartTurn(A, B);
             if (B.weapon.pos != null)
-                B.weapon.pos.StartTurn(B,A);
+                B.weapon.pos.StartTurn(B, A);
+            if (B.boss != null)
+                B.boss.StartTurn(B, A);
+            if (A.bleeding > 0)
+            {
+                A.Hp -= A.bleeding;
+                B.AllAttack.RED += A.bleeding;
+                A.bleeding--;
+            }
+            if (B.bleeding > 0)
+            {
+                B.Hp -= B.bleeding;
+                A.AllAttack.RED += B.bleeding;
+                B.bleeding--;
+            }
             cnt++;
-            if (cnt >= 800)
+            if (cnt >= 1000)
                 break;
             speedA += (A.Speed + 50);
             speedB += (B.Speed + 50);
             if (speedA >= A.weapon.AttackSpeed)
             {
                 speedA -= A.weapon.AttackSpeed;
-                str += "\n你" + A.weapon.Attack(A, B);
+                A.weapon.Attack(A, B);
             }
             if (speedB >= B.weapon.AttackSpeed)
             {
                 speedB -= B.weapon.AttackSpeed;
-                str += "\n" + B.name + B.weapon.Attack(B, A);
+                B.weapon.Attack(B, A);
             }
-            Console.Write(B.RED + "  " + B.WHITE + "  " + B.PALE + "  " + B.BLACK);
         }
-        //Api.Private(user_id, str);
+        str += "回合数：" + cnt + "\n";
+        str += A.ToString();
+        str += "\n造成的红色伤害：" + string.Format("{0:F2}", A.AllAttack.RED);
+        str += "\n造成的白色伤害：" + string.Format("{0:F2}", A.AllAttack.WHITE);
+        str += "\n造成的黑色伤害：" + string.Format("{0:F2}", A.AllAttack.BLACK);
+        str += "\n造成的蓝色伤害：" + string.Format("{0:F2}", A.AllAttack.PALE);
+        str += "\n强壮、虚弱、易伤、抵抗：" + A.Strong + "," + A.weak + "," + A.EasyAttack + "," + A.DefAttack;
+        str += "\n攻击次数：" + A.AllAttack.Times;
+        str += "\n\n" + B.ToString();
+        str += "\n造成的红色伤害：" + string.Format("{0:F2}", B.AllAttack.RED);
+        str += "\n造成的白色伤害：" + string.Format("{0:F2}", B.AllAttack.WHITE);
+        str += "\n造成的黑色伤害：" + string.Format("{0:F2}", B.AllAttack.BLACK);
+        str += "\n造成的蓝色伤害：" + string.Format("{0:F2}", B.AllAttack.PALE);
+        str += "\n强壮、虚弱、易伤、抵抗：" + B.Strong + "," + B.weak + "," + B.EasyAttack + "," + B.DefAttack;
+        str += "\n攻击次数：" + B.AllAttack.Times;
         Api.Private(user_id, str);
+        //Api.Private(user_id, str);
         if (A.IsDead() && B.IsDead()) return 0;
         if (A.IsDead()) return -1;
         if (B.IsDead()) return 1;

@@ -424,11 +424,6 @@ public class ReaderWriter
             Init(user_id);
             return true;
         }
-        else if (message == "重新开始这一天")
-        {
-            Restart(group_id, user_id, name);
-            return true;
-        }
         else if (message == "抑制Hokma核心")
         {
             Api.Group(group_id, "还没有做,还在TODO里面...主要是不知道怎么做,但是就是想限制一下属性上限.有想法的群众可以给我留言.");
@@ -1021,8 +1016,7 @@ public class ReaderWriter
             string c5 = "\n当前佩戴EGO武器：➕"+user.WeaponIncrease + GameManager.weapon[user.EGOWeapon].Name + "\n当前佩戴EGO护甲：➕" + user.ArmorIncrease + GameManager.armor[user.EGOArmor].Name;
             Hero h = new Hero(user);
             c5 += "\n" + h.ToString();
-            string c6 = "\n天梯排名：" + user.Rank;
-            Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money + c1 + c2 + c3 + c4 + c5 +c6);
+            Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money + c1 + c2 + c3 + c4 + c5);
 
         }
         else
@@ -1039,6 +1033,7 @@ public class ReaderWriter
     /// <param name="name"></param>
     public static void Restart(string group_id, string user_id, string name)
     {
+        return;
         UserInfo user = GetUserInfo(user_id);
         if (user.money >= 2000)
         {

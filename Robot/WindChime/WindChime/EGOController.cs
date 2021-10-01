@@ -22,7 +22,7 @@ public class Boss
         str += "\n武器攻击类型：" + hero.weapon.Type;
         str += "\n攻击间隔：" + hero.weapon.AttackSpeed;
         str += "\nboss速度：" + hero.Speed+50;
-        str += "\n攻击伤害：" + String.Format("{0:F2}", (hero.weapon.BaseDamage * (1 + hero.WeaponUp * 0.2))) + "~" + String.Format("{0:F2}", ((hero.weapon.BaseDamage  + hero.weapon.FloatDamage) * (1 + hero.WeaponUp * 0.2)));
+        str += "\n攻击伤害：" + String.Format("{0:F2}", (hero.weapon.BaseDamage * Math.Pow(1.05,hero.WeaponUp))) + "~" + String.Format("{0:F2}", ((hero.weapon.BaseDamage  + hero.weapon.FloatDamage) * Math.Pow(1.05, hero.WeaponUp)));
         str += "\n物理抗性(RED)：" + String.Format("{0:F2}", hero.RED);
         str += "\n精神抗性(WHITE)：" + String.Format("{0:F2}", hero.WHITE);
         str += "\n腐蚀抗性(BLACK)：" + String.Format("{0:F2}", hero.BLACK);
@@ -52,7 +52,7 @@ public class EGOController
                         hero.Hp = Convert.ToDouble(str[1]);
                         hero.Mp = Convert.ToDouble(str[2]);
                         hero.Dodge = Convert.ToInt32(str[3]);
-                        hero.Speed = Convert.ToInt32(str[4]);
+                        hero.Speed = Convert.ToInt32(str[4]) + 50;
                         hero.weapon = GameManager.weapon[Convert.ToInt32(str[5])];
                         hero.WeaponUp = Convert.ToInt32(str[6]);
                         hero.RED = Convert.ToDouble(str[7]);
@@ -65,6 +65,7 @@ public class EGOController
                     boss.DropArrmr = Convert.ToInt32(str[12]);
                     boss.type = str[13];
                     boss.Det = str[14];
+                    boss.hero.boss = new Bosses();
                     Bosses.Add(boss);
                     Console.WriteLine(str[0]);
                 }
@@ -74,12 +75,23 @@ public class EGOController
         {
             Api.Private("635691684", e.ToString());
         }
+        Bosses[13].hero.pos = new MagicShooter();
         Bosses[15].hero.pos = new SpiderNest();
         Bosses[16].hero.pos = new Leticia();
         Bosses[17].hero.pos = new BlackSwanDream();
 
         Bosses[19].hero.pos = new MilkyWay();
         Bosses[22].hero.pos = new SilentOrchestra();
+
+        Bosses[23].hero.pos = new AbhorQueen();
+        Bosses[24].hero.pos = new DespairKnight();
+        Bosses[25].hero.pos = new GreedyKing();
+        Bosses[26].hero.pos = new AngryAttendant();
+        Bosses[27].hero.pos = new VoidCourtiers();
+
+        Bosses[30].hero.pos = new CorpseMountain();
+        Bosses[32].hero.pos = new NothingatAll();
+
         Console.WriteLine("EGOC 加载完毕...");
     }
     public static bool Main(string group_id, string user_id, string name, string sp)
@@ -94,14 +106,9 @@ public class EGOController
             Challenge(group_id, user_id, name, sp);
             return true;
         }
-        if (sp.Contains("更换护甲") || sp.Contains("更换武器"))
+        if (sp.Contains("更换") || sp.Contains("切换"))
         {
             ChangeEGO(group_id, user_id, name, sp);
-            return true;
-        }
-        if (sp.Contains("更换"))
-        {
-            Api.Group(group_id, "请输入 “更换护甲” 或者 “更换武器” 来切换ego！");
             return true;
         }
         return false;
@@ -110,7 +117,84 @@ public class EGOController
     {
         UserInfo usf = ReaderWriter.GetUserInfo(user_id);
         string[] str = sp.Split(" ");
-        if (str[0].Contains("更换护甲"))
+        if (str.Length < 2)
+        {
+            if (str[0].Contains("武器"))
+            {
+                UserInfo A = ReaderWriter.GetUserInfo(user_id);
+                string strs = "";
+                strs += "你拥有的EGO武器：";
+                string strz = "", strt = "", strh = "", strw = "", stra = "", strf = "";
+                for (int i = 0; i < GameManager.weapon.Count; i++)
+                {
+                    if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.ZAYIN)
+                        strz += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                    if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.TETH)
+                        strt += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                    if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.HE)
+                        strh += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                    if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.WAW)
+                        strw += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                    if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.ALEPH)
+                        stra += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                    if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.FINAL)
+                        strf += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                }
+                Api.Group(group_id, strs + "\nZAYIN：" + strz + "\nTETH：" + strt + "\nHE：" + strh + "\nWAW：" + strw + "\nALEPH：" + stra + "\nFINAL：" + strf);
+                return;
+            }
+            if (str[0].Contains("武器"))
+            {
+                UserInfo A = ReaderWriter.GetUserInfo(user_id);
+                string strs = "";
+                strs += "你拥有的EGO护甲：";
+                string strz = "", strt = "", strh = "", strw = "", stra = "", strf = "";
+                for (int i = 0; i < GameManager.armor.Count; i++)
+                {
+                    if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.ZAYIN)
+                        strz += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                    if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.TETH)
+                        strt += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                    if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.HE)
+                        strh += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                    if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.WAW)
+                        strw += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                    if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.ALEPH)
+                        stra += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")  ";
+                    if (A.AllArmor[i] && GameManager.armor[i].Level == ItemLevel.FINAL)
+                        strf += GameManager.armor[i] + "(" + GameManager.armor[i].Easy + ")、";
+                }
+                Api.Group(group_id, strs + "\nZAYIN：" + strz + "\nTETH：" + strt + "\nHE：" + strh + "\nWAW：" + strw + "\nALEPH：" + stra + "\nFINAL：" + strf);
+                return;
+            }
+            //Api./*G*/roup(group_id, "请输入 “更换护甲” 或者 “更换武器” 和你的ego（中间用空格隔开）来切换ego吧！");
+            return;
+        }
+        if (str[0].Contains("更换ego") || str[0].Contains("切换ego"))
+        {
+            string mes = "";
+            for (int i = 0; i < GameManager.armor.Count; i++)
+                if (GameManager.armor[i].Name.Contains(str[1]))
+                    if (usf.AllArmor[i])
+                    {
+                        usf.EGOArmor = i;
+                        mes += "护甲切换为"+ GameManager.armor[usf.EGOArmor].Name;
+                        ReaderWriter.WriteToFile(usf);
+                        break;
+                    }
+            for (int i = 0; i < GameManager.weapon.Count; i++)
+                if (GameManager.weapon[i].Name.Contains(str[1]))
+                    if (usf.AllWeapon[i])
+                    {
+                        usf.EGOWeapon = i;
+                        mes += "\n武器切换为" + GameManager.weapon[usf.EGOWeapon].Name;
+                        ReaderWriter.WriteToFile(usf);
+                        break;
+                    }
+            Api.Group(group_id, mes);
+            return;
+        }
+        if (str[0].Contains("更换护甲") || str[0].Contains("切换护甲"))
         {
             for (int i = 0; i < GameManager.armor.Count; i++)
                 if (GameManager.armor[i].Name.Contains(str[1]))
@@ -124,7 +208,7 @@ public class EGOController
             Api.Group(group_id, Api.GetAtMessage(user_id) + "你没有"+ str[1] + "的护甲！");
             return;
         }
-        if (str[0].Contains("更换武器"))
+        if (str[0].Contains("更换武器") || str[0].Contains("切换武器"))
         {
             for (int i = 0; i < GameManager.weapon.Count; i++)
                 if (GameManager.weapon[i].Name.Contains(str[1]))
@@ -165,6 +249,10 @@ public class EGOController
             foreach (var a in Bosses)
                 if (a.type.Contains("ALEPH"))
                     ss += a.hero.name + " ";
+            ss += "\nFINAL：";
+            foreach (var a in Bosses)
+                if (a.type.Contains("FINAL"))
+                    ss += a.hero.name + " ";
             Api.Group(group_id, ss);
             return;
         }
@@ -180,31 +268,25 @@ public class EGOController
             Api.Group(group_id, "找不到" + str[1] + "相关的boss");
             return;
         }
-        double maxhp, maxmp;
+        double maxhp, maxmp,spd;
         Boss bs = Bosses[BossType];
         maxhp = bs.hero.Hp;
         maxmp = bs.hero.Mp;
+        spd = bs.hero.Speed;
         UserInfo usf = ReaderWriter.GetUserInfo(user_id);
-        if (usf.money <= 500)
+        if (usf.money <= getBossMoney(Bosses[BossType].type))
         {
-            Api.Group(group_id, "需要金币大于500个才能开始挑战,每次挑战ZAYIN消耗100金币，TETH-200,HE-300,WAW-400,ALPEH-500");
+            Api.Group(group_id, "需要金币大于"+ getBossMoney(Bosses[BossType].type) + "个才能开始挑战"+ Bosses[BossType].hero.name+ "。");
             return;
         }
-        if (Bosses[BossType].type == "ZAYIN")
-            usf.money -= 100;
-        if (Bosses[BossType].type == "TETH")
-            usf.money -= 200;
-        if (Bosses[BossType].type == "HE")
-            usf.money -= 300;
-        if (Bosses[BossType].type == "WAW")
-            usf.money -= 400;
-        if (Bosses[BossType].type == "ALPEH")
-            usf.money -= 500;
+        usf.money -= getBossMoney(Bosses[BossType].type);
         Console.WriteLine("??");
         Hero hero = new Hero(usf);
-        int k = War.battle(hero, bs.hero, user_id);
+        Hero boss = new Hero(bs);
+        int k = War.Battle(hero, boss, user_id);
         bs.hero.Hp = maxhp;
         bs.hero.Mp = maxmp;
+        bs.hero.Speed = (int)spd;
         if (k == 1)
         {
             string ss = "挑战胜利";
@@ -272,13 +354,24 @@ public class EGOController
             }
             if (ReaderWriter.random.NextDouble() <= 0.3f && bs.DropWeapon != 0)
             {
-                usf.AllWeapon[bs.DropWeapon] = true;
                 ss += "\n恭喜你获得EGO武器：" + GameManager.weapon[bs.DropWeapon].Name;
+                if (usf.AllWeapon[bs.DropWeapon]){
+                    var a = getBossMoney(Bosses[BossType].type);
+                    ss += "（多余）返还" + a + "金币";
+                    usf.money += a;
+                }
+                usf.AllWeapon[bs.DropWeapon] = true;
             }
             if (ReaderWriter.random.NextDouble() <= 0.3f && bs.DropArrmr != 0)
             {
-                usf.AllArmor[bs.DropArrmr] = true;
                 ss += "\n恭喜你获得EGO护甲：" + GameManager.armor[bs.DropArrmr].Name;
+                if (usf.AllWeapon[bs.DropWeapon])
+                {
+                    var a = getBossMoney(Bosses[BossType].type);
+                    ss += "（多余）返还" + a + "金币";
+                    usf.money += a;
+                }
+                usf.AllArmor[bs.DropArrmr] = true;
             }
             Api.Group(group_id, Api.GetAtMessage(user_id) + ss);
         }
@@ -309,5 +402,19 @@ public class EGOController
         Hero h = new Hero(usf);
         string s = "\n你每次会受到的伤害：" + String.Format("{0:F2}", Bosses[BossType].mind * h.GetDef(Bosses[BossType].hero.weapon.Type)) + "~" + String.Format("{0:F2}", Bosses[BossType].maxd * h.GetDef(Bosses[BossType].hero.weapon.Type));
         Api.Group(group_id, Bosses[BossType].ToString() + s);
+    }
+    public static int getBossMoney(string str)
+    {
+        if (str == "ZAYIN")
+            return 100;
+        if (str == "TEHT")
+            return 200;
+        if (str == "HE")
+            return 300;
+        if (str == "WAW")
+            return 400;
+        if (str == "ALPEH")
+            return 500;
+        return 600;
     }
 }

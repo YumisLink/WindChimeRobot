@@ -66,44 +66,57 @@ public class Weapon : Item
             damage.type = SpcType;
             damage.damage = SpcBaseDamage + EGOSTRONGER.random.NextDouble() * SpcFloatDamage;
         }
-        damage.damage *= (1 + 0.2 * Self.WeaponUp);
+        damage.damage *= Math.Pow(1.05, Self.WeaponUp);
         damage.damage += Self.Strong;
         damage.damage -= Self.weak;
+
         if (Self.weapon.pos!= null)
             Self.weapon.pos.BeforeDealDamage(Self, Target, damage);
         if (Self.pos != null)
             Self.pos.BeforeDealDamage(Self, Target, damage);
+        if (Self.arm != null)
+            if (Self.arm.pos!=null)
+            Self.arm.pos.BeforeDealDamage(Self, Target, damage);
+
+
         if (Target.weapon.pos != null)
             Target.weapon.pos.BeforeTakeDamage(Target,Self,damage);
         if (Target.pos != null)
             Target.pos.BeforeTakeDamage(Target, Self, damage);
+        if (Target.arm != null)
+            if (Target.arm.pos != null)
+                Target.arm.pos.BeforeTakeDamage(Target, Self, damage);
+
+
+
+
         if (damage.damage < 0) damage.damage = 0;
         switch (damage.type)
         {
             case (AttackTpye.RED):
                 damage.type = AttackTpye.RED;
-                Target.UnderAttack(damage);
+                Target.UnderAttack(Self,damage);
                 damage.damage *= Target.RED;
                 str += Math.Round(damage.damage) + " µãºìÉ«ÉËº¦£¡" + Target.name;
                 str += "Ê£ÓàÑªÁ¿£º" + Math.Round(Target.Hp);
                 break;
             case (AttackTpye.WHITE):
                 damage.type = AttackTpye.WHITE;
-                Target.UnderAttack(damage);
+                Target.UnderAttack(Self, damage);
                 damage.damage *= Target.WHITE;
                 str += Math.Round(damage.damage) + " µã°×É«ÉËº¦£¡" + Target.name;
                 str += "Ê£Óà¾«Éñ£º" + Math.Round(Target.Mp);
                 break;
             case (AttackTpye.BLACK):
                 damage.type = AttackTpye.BLACK;
-                Target.UnderAttack(damage);
+                Target.UnderAttack(Self, damage);
                 damage.damage *= Target.BLACK;
                 str += Math.Round(damage.damage) + " µãºÚÉ«ÉËº¦£¡" + Target.name;
                 str += "Ê£Óà¾«Éñ£º" + Math.Round(Target.Mp) + "Ê£ÓàÑªÁ¿£º" + Math.Round(Target.Hp);
                 break;
             case (AttackTpye.PALE):
                 damage.type = AttackTpye.PALE;
-                Target.UnderAttack(damage);
+                Target.UnderAttack(Self, damage);
                 damage.damage *= Target.PALE;
                 str += Math.Round(damage.damage) + " µãÀ¶É«ÉËº¦£¡" + Target.name;
                 str += "Ê£ÓàÑªÁ¿£º" + Math.Round(Target.Hp);
@@ -119,6 +132,7 @@ public class Armor : Item
     public double WHITE;
     public double BLACK;
     public double PALE;
+    public string Easy;
     public Armor(string name, double R,double W,double B,double P, ItemLevel lv)
     {
         Name = name;
@@ -169,6 +183,16 @@ public class GameManager
         weapon[22].pos = new Joyous();
         weapon[24].pos = new DaCapo();
 
+        weapon[25].pos = new LoveAndHete();
+        weapon[27].pos = new BlindGold();
+        weapon[28].pos = new NoEyeCrazy();
+        weapon[29].pos = new VoidIllusory();
+
+        weapon[32].pos = new Happy();
+        weapon[33].pos = new BloodDesireSymptom();
+        weapon[34].pos = new Mimicry();
+
+
 
 
         using (StreamReader sr = new StreamReader("Armor.dat"))
@@ -183,8 +207,10 @@ public class GameManager
                     Convert.ToDouble(str[4]), Convert.ToDouble(str[5]),
                     (ItemLevel)Enum.Parse(typeof(ItemLevel), str[6])));
                 armor[cnt].Detail = str[7];
+                armor[cnt].Easy = str[8];
                 cnt++;
             }
         }
+        armor[11].pos = new ParadiseLost();
     }
 }

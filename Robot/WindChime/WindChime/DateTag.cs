@@ -27,6 +27,11 @@ public class DateTag
         }
         return false;
     }
+
+
+
+
+
     public static void Question(string group_id, string user_id, string name, string message)
     {
         string str = "ÔÚÈº£º" + group_id + "\n";

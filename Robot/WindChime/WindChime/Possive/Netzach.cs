@@ -10,6 +10,8 @@ public class DaCapo : Possvie
 {
     public override void BeforeDealDamage(Hero self, Hero Target, Damage dam)
     {
+        if (ReaderWriter.random.NextDouble() <= 0.7)
+            return;
         if (ReaderWriter.random.Next(0, 2) == 0)
             Target.weak++;
         else

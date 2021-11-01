@@ -21,6 +21,7 @@ namespace Yumis
         public static GameManager gm;
         public static War w;
         public static EGOController EgoController;
+        public static int limitCount = 0;
         static void Main(string[] args)
         {
             /*
@@ -50,12 +51,6 @@ namespace Yumis
             {
                 try
                 {
-                    if (DateTime.Now.Day != day)
-                    {
-                        //State.ReNew();
-                        //State.Write();
-                        day = DateTime.Now.Day;
-                    }
                     //dater.Prt();
                     HttpListenerContext context = listener.GetContext();
                     HttpListenerRequest request = context.Request;
@@ -86,12 +81,12 @@ namespace Yumis
                                 {
                                     Api.Group(group_id, "新用户通过“风铃眼熟我”来注册账号" +
                                         "\n摸摸风铃：     增加风铃的好感度" +
-                                        "\n打工、工作：   日常可以进行“打工”来获取金币" +
+                                        "\n打工、工作：   日常可以进行“打工”来获取金币(AutoWork自动工作)" +
                                         "\n加入问答：     来让风铃会对你的说话产生回应" +
                                         "\nDelete：      让风铃遗忘问答的内容" +
                                         "\n查询：         获取自己当前的好感度以及金币和属性值" +
                                         "\n查询EGO：      获取自己当前的EGO的详细状态" +
-                                        "\n如果好感度到达比较高的程度，风铃的回答会产生一些变化哦！" +
+                                        "\n查询缺少的武器：查询缺少的武器" +
                                         "\n公招+tag：      来进行明日方舟的公开招募的组合查询。" +
                                         "\n抽取异想体：    抽取一个明天晚上陪你睡觉的异常" +
                                         "\n留言：         可以让风铃妈妈直接看到你的消息哦！" +
@@ -163,6 +158,7 @@ namespace Yumis
         }
         static bool LoopK(string group_id, string user_id, string name, string sp)
         {
+
             if (group_id == "621976344")
             {
                 if (sp.Contains("充值") || sp.Contains("抽奖"))

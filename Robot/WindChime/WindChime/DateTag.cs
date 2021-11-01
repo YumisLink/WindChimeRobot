@@ -27,7 +27,10 @@ public class DateTag
         }
         return false;
     }
+    public static void Roll(string group_id,string name)
+    {
 
+    }
 
 
 

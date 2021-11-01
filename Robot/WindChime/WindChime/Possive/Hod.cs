@@ -23,7 +23,7 @@ public class BlackSwan : Possvie
 {
     public override void BeforeDealDamage(Hero self, Hero Target, Damage dam)
     {
-        self.BLACK += 0.01;
+        self.BLACK += 0.02;
     }
 }
 public class SpiderNest : Possvie
@@ -37,12 +37,12 @@ public class Leticia : Possvie
 {
     public override void BeforeTakeDamage(Hero self, Hero Target, Damage dam)
     {
-        double low = Target.weapon.BaseDamage + 0.8f * Target.weapon.FloatDamage;
+        double low = Target.weapon.BaseDamage + 0.7f * Target.weapon.FloatDamage;
         low *= Math.Pow(1.07,Target.WeaponUp);
         if (dam.damage > low)
         {
             Console.WriteLine(dam.damage+" - " + low);
-            self.Hp -= 10.01;
+            self.Hp -= 10;
         }
     }
 }

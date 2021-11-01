@@ -21,7 +21,7 @@ public class Boss
         str += "\n武器：" + hero.weapon.Name;
         str += "\n武器攻击类型：" + hero.weapon.Type;
         str += "\n攻击间隔：" + hero.weapon.AttackSpeed;
-        str += "\nboss速度：" + hero.Speed+50;
+        str += "\nboss速度：" + (int)(hero.Speed+50);
         str += "\n攻击伤害：" + String.Format("{0:F2}", (hero.weapon.BaseDamage * Math.Pow(1.05,hero.WeaponUp))) + "~" + String.Format("{0:F2}", ((hero.weapon.BaseDamage  + hero.weapon.FloatDamage) * Math.Pow(1.05, hero.WeaponUp)));
         str += "\n物理抗性(RED)：" + String.Format("{0:F2}", hero.RED);
         str += "\n精神抗性(WHITE)：" + String.Format("{0:F2}", hero.WHITE);
@@ -67,7 +67,6 @@ public class EGOController
                     boss.Det = str[14];
                     boss.hero.boss = new Bosses();
                     Bosses.Add(boss);
-                    Console.WriteLine(str[0]);
                 }
             }
         }
@@ -92,7 +91,17 @@ public class EGOController
         Bosses[30].hero.pos = new CorpseMountain();
         Bosses[32].hero.pos = new NothingatAll();
 
-        Console.WriteLine("EGOC 加载完毕...");
+
+        Bosses[36].hero.pos = new Cat();
+
+        Bosses[38].hero.pos = new BigBird();
+        Bosses[39].hero.pos = new SPBird();
+        Bosses[40].hero.pos = new FinalBird();
+
+        Bosses[41].hero.pos = new InfiltrateHeaven();
+        Bosses[42].hero.pos = new Silent();
+        Bosses[43].hero.pos = new BlueStar();
+        Console.WriteLine("Bosses 加载完毕...");
     }
     public static bool Main(string group_id, string user_id, string name, string sp)
     {
@@ -111,7 +120,29 @@ public class EGOController
             ChangeEGO(group_id, user_id, name, sp);
             return true;
         }
+        if(sp == "查询缺少的武器")
+        {
+            FindLostEGO(group_id, user_id, name);
+        }
         return false;
+    }
+    public static void FindLostEGO(string group_id, string user_id, string name)
+    {
+        string str = Api.GetAtMessage(user_id);
+        var usf = ReaderWriter.GetUserInfo(user_id);
+        if (!usf.CanGet)
+            return;
+        str += "\n武器：";
+        for (int i = 0; i < GameManager.weapon.Count; i++)
+            if (!usf.AllWeapon[i])
+                str += $"{GameManager.weapon[i].Name} ";
+        str += "\n护甲：";
+        for (int i = 0; i < GameManager.armor.Count; i++)
+            if (!usf.AllArmor[i])
+                str += $"{GameManager.armor[i].Name} ";
+        Api.Group(group_id,str);
+        return;
+
     }
     public static void ChangeEGO(string group_id, string user_id, string name, string sp)
     {
@@ -128,17 +159,17 @@ public class EGOController
                 for (int i = 0; i < GameManager.weapon.Count; i++)
                 {
                     if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.ZAYIN)
-                        strz += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                        strz += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + GameManager.weapon[i].GetWeaponSpeed() + ")  ";
                     if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.TETH)
-                        strt += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                        strt += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + GameManager.weapon[i].GetWeaponSpeed() + ")  ";
                     if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.HE)
-                        strh += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                        strh += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + GameManager.weapon[i].GetWeaponSpeed() + ")  ";
                     if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.WAW)
-                        strw += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                        strw += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + GameManager.weapon[i].GetWeaponSpeed() + ")  ";
                     if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.ALEPH)
-                        stra += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                        stra += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + GameManager.weapon[i].GetWeaponSpeed() + ")  ";
                     if (A.AllWeapon[i] && GameManager.weapon[i].Level == ItemLevel.FINAL)
-                        strf += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + ")  ";
+                        strf += GameManager.weapon[i] + "(" + Damage.GetAttackTypeString(GameManager.weapon[i].Type) + GameManager.weapon[i].GetWeaponSpeed() + ")  ";
                 }
                 Api.Group(group_id, strs + "\nZAYIN：" + strz + "\nTETH：" + strt + "\nHE：" + strh + "\nWAW：" + strw + "\nALEPH：" + stra + "\nFINAL：" + strf);
                 return;
@@ -280,7 +311,6 @@ public class EGOController
             return;
         }
         usf.money -= getBossMoney(Bosses[BossType].type);
-        Console.WriteLine("??");
         Hero hero = new Hero(usf);
         Hero boss = new Hero(bs);
         int k = War.Battle(hero, boss, user_id);
@@ -316,37 +346,37 @@ public class EGOController
             }
             if (bs.hero.name == "虚无弄臣" && !usf.Inhibition[4])
             {
-                ss += "\n存在意义的憧憬！\nTiphereth抑制成功，中央本部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），速度永久提高30点已经刷新今日工作次数。";
+                ss += "\n存在意义的憧憬！\nTiphereth抑制成功，中央本部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），已经刷新今日工作次数。";
                 usf.Inhibition[4] = true;
                 usf.WorkTime = 0;
             }
-            if (bs.hero.name == "说谎的大人" && !usf.Inhibition[5])
+            if (bs.hero.name == "奥兹玛" && !usf.Inhibition[5])
             {
-                ss += "\n值得衬托的信任！\nChesed抑制成功，福利部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），速度永久提高30点已经刷新今日工作次数。";
+                ss += "\n值得衬托的信任！\nChesed抑制成功，福利部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），死亡之前有概率回复所有生命值已经刷新今日工作次数。";
                 usf.Inhibition[5] = true;
                 usf.WorkTime = 0;
             }
             if (bs.hero.name == "一无所有" && !usf.Inhibition[6])
             {
-                ss += "\n守护他人的决意！\nGebura抑制成功，惩戒部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），速度永久提高30点已经刷新今日工作次数。";
+                ss += "\n守护他人的决意！\nGebura抑制成功，惩戒部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），攻击力提高10%已经刷新今日工作次数。";
                 usf.Inhibition[6] = true;
                 usf.WorkTime = 0;
             }
 
             if (bs.hero.name == "白夜" && !usf.Inhibition[7])
             {
-                ss += "\n拥抱希望，创造未来！\nHokma抑制成功，记录部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），速度永久提高30点已经刷新今日工作次数。";
+                ss += "\n拥抱希望，创造未来！\nHokma抑制成功，记录部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），所有属性上限开放到180，已经刷新今日工作次数。";
                 usf.Inhibition[7] = true;
                 usf.WorkTime = 0;
                 usf.Hokma = 1;
             }
             if (bs.hero.name == "终末鸟" && !usf.Inhibition[8])
             {
-                ss += "\n直面恐惧，斩断循环！\nBinah抑制成功，研发部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），速度永久提高30点已经刷新今日工作次数。";
+                ss += "\n直面恐惧，斩断循环！\nBinah抑制成功，研发部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），抗性提高0.1已经刷新今日工作次数。";
                 usf.Inhibition[8] = true;
                 usf.WorkTime = 0;
             }
-            if (bs.hero.name == "罪恶感" && !usf.Inhibition[9])
+            if (bs.hero.name == "噤默处子" && !usf.Inhibition[9])
             {
                 ss += "\n光之树！\nKether抑制成功，构筑部已经不受逆卡巴拉能量融毁影响（每日工作次数+1），速度永久提高30点已经刷新今日工作次数。";
                 usf.Inhibition[9] = true;
@@ -365,7 +395,7 @@ public class EGOController
             if (ReaderWriter.random.NextDouble() <= 0.3f && bs.DropArrmr != 0)
             {
                 ss += "\n恭喜你获得EGO护甲：" + GameManager.armor[bs.DropArrmr].Name;
-                if (usf.AllWeapon[bs.DropWeapon])
+                if (usf.AllArmor[bs.DropArrmr])
                 {
                     var a = getBossMoney(Bosses[BossType].type);
                     ss += "（多余）返还" + a + "金币";
@@ -377,7 +407,7 @@ public class EGOController
         }
         else
         {
-            Api.Group(group_id, "挑战失败...");
+            Api.Group(group_id, "挑战失败...，如果不知道为什么可以输入 挑战查询+boss名字进行查询boss详细信息哦！");
         }
         ReaderWriter.WriteToFile(usf);
     }
@@ -401,7 +431,19 @@ public class EGOController
         UserInfo usf = ReaderWriter.GetUserInfo(user_id);
         Hero h = new Hero(usf);
         string s = "\n你每次会受到的伤害：" + String.Format("{0:F2}", Bosses[BossType].mind * h.GetDef(Bosses[BossType].hero.weapon.Type)) + "~" + String.Format("{0:F2}", Bosses[BossType].maxd * h.GetDef(Bosses[BossType].hero.weapon.Type));
-        Api.Group(group_id, Bosses[BossType].ToString() + s);
+        double att = GameManager.weapon[usf.EGOWeapon].BaseDamage * Math.Pow(1.07, usf.WeaponIncrease) + GameManager.weapon[usf.EGOWeapon].FloatDamage * Math.Pow(1.07, usf.WeaponIncrease) * 0.5;
+        double k = 0;
+        if (GameManager.weapon[usf.EGOWeapon].Type == AttackTpye.BLACK)
+            k = Math.Min(Bosses[BossType].hero.Hp / (att*0.7), Bosses[BossType].hero.Mp / (att * 0.7 * Bosses[BossType].hero.BLACK));
+        if (GameManager.weapon[usf.EGOWeapon].Type == AttackTpye.RED)
+            k = Bosses[BossType].hero.Hp /(att * Bosses[BossType].hero.RED);
+        if (GameManager.weapon[usf.EGOWeapon].Type == AttackTpye.PALE)
+            k = Bosses[BossType].hero.Hp / (att * Bosses[BossType].hero.PALE);
+        if (GameManager.weapon[usf.EGOWeapon].Type == AttackTpye.WHITE)
+            k = Bosses[BossType].hero.Hp / (att * Bosses[BossType].hero.WHITE);
+
+        string s2 = $"\n预计攻击次数{String.Format("{0:F2}",k)}";
+        Api.Group(group_id, Bosses[BossType].ToString() + s + s2);
     }
     public static int getBossMoney(string str)
     {

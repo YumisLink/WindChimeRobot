@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 class Api {
+    public static List<string> GroupLimit = new List<string>();
     public static string GetAtMessage(string user_id)
     {
         return "[CQ:at,qq=" + user_id + "]";

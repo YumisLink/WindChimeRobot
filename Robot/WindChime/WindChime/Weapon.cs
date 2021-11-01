@@ -53,6 +53,7 @@ public class Weapon : Item
     {
         if (EGOSTRONGER.random.NextDouble() * 400 <= Target.Dodge)
         {
+            Self.AllAttack.zero++;
             return "使用了 " + Name + " 但是被" + Target.name + "闪避了！";
         }
         string str = "使用了" + Name + "对 " + Target.name + " 造成了 ";
@@ -124,6 +125,20 @@ public class Weapon : Item
         }
         return str;
     }
+    public string GetWeaponSpeed()
+    {
+        if (AttackSpeed >= 3000)
+            return "龟速";
+        if (AttackSpeed >= 2000)
+            return "极慢";
+        if (AttackSpeed >= 1300)
+            return "慢";
+        if (AttackSpeed >= 900)
+            return "中";
+        if (AttackSpeed >= 500)
+            return "快";
+        return "极快";
+    }
 }
 
 public class Armor : Item
@@ -192,6 +207,16 @@ public class GameManager
         weapon[33].pos = new BloodDesireSymptom();
         weapon[34].pos = new Mimicry();
 
+
+        weapon[35].pos = new LieTouChangBa();
+        weapon[38].pos = new TuiSeJiYi();
+
+        weapon[41].pos = new Justice();
+        weapon[42].pos = new BoMing();
+
+
+        weapon[44].pos = new SiJiBa();
+        weapon[45].pos = new NewStar();
 
 
 

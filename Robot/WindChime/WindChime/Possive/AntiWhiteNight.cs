@@ -17,12 +17,12 @@ public class ParadiseLost : Possvie
 {
     public override void BeforeTakeDamage(Hero self, Hero Target, Damage dam)
     {
-        if (self.weapon.Name != " ß¿÷‘∞")
+        if (self.weapon.Name == " ß¿÷‘∞")
         {
-            self.RED = 0.5;
-            self.WHITE = 0.5;
-            self.BLACK = 0.5;
-            self.PALE = 0.5;
+            self.RED = 0.2;
+            self.WHITE = 0.2;
+            self.BLACK = 0.2;
+            self.PALE = 0.2;
         }
         dam.damage -= 5;
         if (dam.damage < 0)

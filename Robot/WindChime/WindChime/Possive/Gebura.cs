@@ -15,8 +15,8 @@ public class BloodDesireSymptom : Possvie
 {
     public override void BeforeDealDamage(Hero self, Hero Target, Damage dam)
     {
-        self.Hp += dam.damage * 0.05;
-        self.Mp += dam.damage * 0.05;
+        self.Hp += dam.damage * 0.03;
+        self.Mp += dam.damage * 0.03;
     }
 }
 public class Mimicry : Possvie
@@ -25,7 +25,7 @@ public class Mimicry : Possvie
     {
         if (ReaderWriter.random.NextDouble() <= 0.1)
             dam.damage *= 10;
-        self.Hp += dam.damage * 0.25;
+        self.Hp += dam.damage * 0.1;
     }
 }
 

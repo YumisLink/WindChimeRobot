@@ -23,3 +23,9 @@ D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.dll
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.pdb
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.genruntimeconfig.cache
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.csprojAssemblyReference.cache
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\Microsoft.Win32.SystemEvents.dll
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\System.Drawing.Common.dll
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
+D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Release\netcoreapp3.1\Wind.csproj.CopyComplete

@@ -23,7 +23,6 @@ D:\WindChimeRobot\Robot\WindChime\WindChime\bin\Debug\netcoreapp3.1\Wind.pdb
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Debug\netcoreapp3.1\Wind.csprojAssemblyReference.cache
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Debug\netcoreapp3.1\Wind.AssemblyInfoInputs.cache
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Debug\netcoreapp3.1\Wind.AssemblyInfo.cs
-D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Debug\netcoreapp3.1\Wind.csproj.CoreCompileInputs.cache
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Debug\netcoreapp3.1\Wind.dll
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Debug\netcoreapp3.1\Wind.pdb
 D:\WindChimeRobot\Robot\WindChime\WindChime\obj\Debug\netcoreapp3.1\Wind.genruntimeconfig.cache

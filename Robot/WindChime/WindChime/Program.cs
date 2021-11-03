@@ -161,8 +161,19 @@ namespace Yumis
 
             if (group_id == "621976344")
             {
-                if (sp.Contains("充值") || sp.Contains("抽奖"))
-                    Api.Group("621976344", "本服为公益服，服主自费运营，没有抽奖和充值功能，服主会经常发放点券福利和cdk福利或者道具等，若喜欢并希望支持本服可以找群主赞助，赞助费用会全部用于维护服务器，并会给予赞助人相应的但不影响平衡性的游戏道具。");
+                if (sp.Contains("赞助") || sp.Contains("充值"))
+                {
+                    SendMessage sm = new SendMessage()
+                    {
+                        user_id = 0,
+                        group_id = 621976344,
+                        auto_escape = false
+                    };
+                    //sm.message.Add(new Message(MessageType.text.ToString(), new DataPureText() { text = "wocao" }));
+                    sm.message.Add(new Message(MessageType.image.ToString(), new DataImage() { file = "file:///" + new FileInfo($"UserInfoImage/test.jpg").FullName }));
+                    ApiAsnyc.SendMessageAsync(sm);
+                }
+                    //Api.Group("621976344", "本服为公益服，服主自费运营，没有抽奖和充值功能，服主会经常发放点券福利和cdk福利或者道具等，若喜欢并希望支持本服可以找群主赞助，赞助费用会全部用于维护服务器，并会给予赞助人相应的但不影响平衡性的游戏道具。");
             }
             if (group_id == "621976344")
             {

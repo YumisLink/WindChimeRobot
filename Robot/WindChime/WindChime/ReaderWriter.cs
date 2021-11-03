@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Drawer;
+using System;
 using System.Collections.Generic;
 using System.IO;
 public struct UserInfo
@@ -1059,15 +1060,23 @@ public class ReaderWriter
         UserInfo user = GetUserInfo(user_id);
         if (user.CanGet)
         {
-            string c1 = "\n勇气：" + user.Courage + "(" + GetLv(user.Courage) + "级)";
-            string c2 = "\n谨慎：" + user.Cautious + "(" + GetLv(user.Cautious) + "级)";
-            string c3 = "\n自律：" + user.Discipline + "(" + GetLv(user.Discipline) + "级)";
-            string c4 = "\n正义：" + user.Justice + "(" + GetLv(user.Justice) + "级)";
-            string c5 = "\n当前佩戴EGO武器：➕"+user.WeaponIncrease + GameManager.weapon[user.EGOWeapon].Name + "\n当前佩戴EGO护甲：➕" + user.ArmorIncrease + GameManager.armor[user.EGOArmor].Name;
-            Hero h = new Hero(user);
-            c5 += "\n" + h.ToString() + $"\n剩余月卡天数：{user.MoonCard}天";
-            Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money + c1 + c2 + c3 + c4 + c5);
-
+            //string c1 = "\n勇气：" + user.Courage + "(" + GetLv(user.Courage) + "级)";
+            //string c2 = "\n谨慎：" + user.Cautious + "(" + GetLv(user.Cautious) + "级)";
+            //string c3 = "\n自律：" + user.Discipline + "(" + GetLv(user.Discipline) + "级)";
+            //string c4 = "\n正义：" + user.Justice + "(" + GetLv(user.Justice) + "级)";
+            //string c5 = "\n当前佩戴EGO武器：➕"+user.WeaponIncrease + GameManager.weapon[user.EGOWeapon].Name + "\n当前佩戴EGO护甲：➕" + user.ArmorIncrease + GameManager.armor[user.EGOArmor].Name;
+            //Hero h = new Hero(user);
+            //c5 += "\n" + h.ToString() + $"\n剩余月卡天数：{user.MoonCard}天";
+            //Api.Group(group_id, name + "当前好感度：" + user.heart + "\n当前金币为：" + user.money + c1 + c2 + c3 + c4 + c5);
+            SendMessage sm = new SendMessage()
+            {
+                user_id = Convert.ToInt64(user.id),
+                group_id = Convert.ToInt64(group_id),
+                auto_escape = false
+            };
+            //sm.message.Add(new Message(MessageType.text.ToString(), new DataPureText() { text = "wocao" }));
+            sm.message.Add(new Message(MessageType.image.ToString(), new DataImage() { file = "file:///" + ImageDrawer.DrawUserInfo(user) }));
+            ApiAsnyc.SendMessageAsync(sm);
         }
         else
         {

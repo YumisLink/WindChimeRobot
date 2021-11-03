@@ -33,7 +33,6 @@ class Api {
     {
         Date.Write(DateTime.Now + "****ÔÚ" + group_id + "·¢ËÍ" + message);
         long Group_id = Convert.ToInt64(group_id);
-
         var request = (HttpWebRequest)WebRequest.Create("http://127.0.0.1:5700/send_group_msg?group_id=" + group_id + "&message=" + message);
         request.Method = "POST";
         request.ContentType = "application/json";

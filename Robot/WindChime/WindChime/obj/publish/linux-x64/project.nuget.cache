@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "6/EbRUCa+YNGBgHPzORneMcku+P4Z0XDZVAXKbH9pRLLnj5+55Ao+KXOW6NpnOAxdyShoHwPxjR7uyWR4hkmNA==",
+  "dgSpecHash": "3/yUPDBTwIYytp2x0MmyI44nFyKFNquWXEpigZcSty84KtyV+iypyQ3czXMyPoAEApqE78oa/qt+0sPrPoW+ng==",
   "success": true,
   "projectFilePath": "D:\\WindChimeRobot\\Robot\\WindChime\\WindChime\\Wind.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\63569\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
+    "C:\\Users\\63569\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
+    "C:\\Users\\63569\\.nuget\\packages\\system.drawing.common\\5.0.2\\system.drawing.common.5.0.2.nupkg.sha512",
     "C:\\Users\\63569\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\3.1.5\\microsoft.netcore.app.host.linux-x64.3.1.5.nupkg.sha512"
   ],
   "logs": []
